@@ -1,0 +1,104 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Deutsch (Deutschland) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "main.ico"
+
+MAIN_ICON               ICON                    "musikspieler.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+
+PNG_STOP                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Stop.png"
+
+PNG_PLAY                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Play-music.png"
+
+PNG_NEXT                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Next track.png"
+
+PNG_PAUSE               RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Pause.png"
+
+PNG_LAST                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Last_track.png"
+
+PNG_FORWARD             RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Track-forward.png"
+
+PNG_REWIND              RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Track_rewind.png"
+
+PNG_ADD                 RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Add_32x32.png"
+
+PNG_FOLDER              RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Folder_32x32.png"
+
+PNG_INFO                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Information_32x32.png"
+
+PNG_EXIT                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Log Out_32x32.png"
+
+PNG_OPEN                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Open_32x32.png"
+
+
+#endif    // Deutsch (Deutschland) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
