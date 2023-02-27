@@ -43,6 +43,7 @@ void LibZPlayer::ScanFile(ZPlay* inst, const wchar_t* z_filename)
 {
 	if (inst->OpenFileW(z_filename, sfAutodetect) != 0)
 	{
+				
 		TID3InfoEx id3_info;
 		inst->LoadID3Ex(&id3_info, 1);
 
@@ -75,7 +76,8 @@ void LibZPlayer::ScanFile(ZPlay* inst, const wchar_t* z_filename)
 						   id3_info.TrackNum,
 						   time.wx_str(),
 						   sVbr.wx_str(),	
-						   sample.wx_str()
+						   sample.wx_str(),
+						   z_filename
 		});
 	} 
 	
@@ -87,6 +89,52 @@ void LibZPlayer::ScanFile(ZPlay* inst, const wchar_t* z_filename)
 	}
 	return;
 }
+void LibZPlayer::struc_delete()
+{
+	while (!i_file.empty()) {
+		i_file.pop_back();
+	}
+
+}
+int LibZPlayer::GetMasterVolume(ZPlay* inst)
+{
+	unsigned int rvol = 0;
+	unsigned int lvol = 0;
+
+	inst->GetMasterVolume(&rvol, &lvol);
+
+	/*
+	* Matervol zu ein Rechnen rvol + lvol / 2 
+	*							50 + 50 / 2 = 50 Vol
+	* 
+	*/
+	unsigned int mastervol = rvol + lvol / 2;
+
+	return mastervol;
+}
+void LibZPlayer::play_worker(ZPlay* inst, wxWindow* parent, wxStatusBar* bar)
+{
+	int run = 1;
+	TStreamStatus status;
+	inst->GetStatus(&status);
+
+	while (run)
+	{
+
+		TStreamTime pos;
+		inst->GetPosition(&pos);		
+		bar->SetStatusText(wxString::Format("% 02i: % 02i : % 02i", &pos));
+
+		if (status.fPlay != 0) {
+			run = 0;
+		}
+
+	}
+
+}
+
+
+
 
 int LibZPlayer::ZGetVersion(ZPlay* inst)
 {

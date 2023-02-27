@@ -16,6 +16,7 @@ struct fscan
 	wxString stime;
 	wxString sabtastrate;
 	wxString ssamplerate;
+	wxString spath;
 };
 
 
@@ -35,7 +36,9 @@ class LibZPlayer
 		// INFO GET SET
 		int ZGetVersion(ZPlay* inst);		
 		wxVector<fscan> i_file;
-
+		void struc_delete();
+		void play_worker(ZPlay* inst, wxWindow* parent, wxStatusBar* bar);
+		int GetMasterVolume(ZPlay* inst);
 	private:
 			
 };

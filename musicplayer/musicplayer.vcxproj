@@ -124,6 +124,9 @@
       <AdditionalDependencies>comctl32.lib;libzplay_static.lib;boost_locale-vc142-mt-x32-1_81.lib;libboost_thread-vc142-mt-x32-1_81.lib;libboost_chrono-vc142-mt-x32-1_81.lib;H:\C++\libZPlay\decoders\zlib\Release\zlib.lib;H:\C++\libZPlay\decoders\soundtouch\lib\SoundTouch.lib;H:\C++\libZPlay\decoders\lpng\libpng\Release\libpng.lib;H:\C++\libZPlay\decoders\libvorbis\win32\VorbisFile_Static_Release\vorbisfile_static.lib;H:\C++\libZPlay\decoders\libvorbis\win32\VorbisEnc_Static_Release\vorbisenc_static.lib;H:\C++\libZPlay\decoders\libvorbis\win32\Vorbis_Static_Release\vorbis_static.lib;H:\C++\libZPlay\decoders\libogg\win32\Static_Release\ogg_static.lib;H:\C++\libZPlay\decoders\libmad\msvc++\Release\libmad.lib;H:\C++\libZPlay\decoders\libFLAC\Release\libFLAC_static.lib;H:\C++\libZPlay\decoders\lame\output\Release\libmp3lame-static.lib;H:\C++\libZPlay\decoders\jpeglib\Release\jpeglib.lib;H:\C++\libZPlay\decoders\faad\libfaad\Release\libfaad.lib;H:\C++\libZPlay\decoders\faac\libfaac\Release\libfaac.lib;H:\C++\libZPlay\decoders\a52dec\vc++\Release\liba52.lib;H:\C++\libZPlay\decoders\soundtouch\source\SoundTouch\Release\SoundTouch.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrtd.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <ResourceCompile>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

@@ -30,6 +30,8 @@ wxDEFINE_EVENT(wxID_NEXTTRACK, wxCommandEvent);
 wxDEFINE_EVENT(wxID_PREVTRACK, wxCommandEvent);
 wxDEFINE_EVENT(wxID_DELLITEMSALL, wxCommandEvent);
 wxDEFINE_EVENT(wxID_SLIDER_VOL, wxScrollEvent);
+wxDEFINE_EVENT(wxID_RIGHT_CLICK, wxListEvent);
+
 
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(wxID_ADDFILES, MainWindow::onAddFiles)
@@ -70,30 +72,25 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, const wxString& title, c
 	Connect(wxID_SLIDER_VOL, wxEVT_COMMAND_SLIDER_UPDATED, wxScrollEventHandler(MainWindow::onSliderScrollVol));
 
 	Init_Components(h, w);
-
-	//mplayer.ScanFile(MainWindow::player, wxString::Format("F:\\MUSIC_2021\\90' TECHNO RAVE\\001 - 3 Steps Ahead - Drop it.mp3"));
-
-	//for (auto mystr: mplayer.i_file)
-	//{
-	//	wxMessageBox(wxString::Format(wxT("%s"), mystr.sartist, _("hier"), wxOK_DEFAULT));
-	//	}
 	
-	//fscan data{};
-	//wxMessageBox(wxString::Format(wxT("%s"), data.stitle[0], _("hier"), wxOK_DEFAULT));
-
 	
 	// Statusbar
 #if wxUSE_STATUSBAR
-	const int SIZE = 2;
-	wxStatusBar* statusbar = CreateStatusBar(SIZE);
+	const int SIZE = 3;
+	statusbar = CreateStatusBar(SIZE);
 	statusbar->SetBackgroundColour(wxColour(100, 100, 80));
 	statusbar->SetForegroundColour(wxColour(255, 255, 255));
 	//int ver = GetVersion(MainWindow::player);
 	int ver = mplayer.ZGetVersion(this->player);
-	statusbar->SetStatusText(wxString::Format("Compiled with - libZPlay v.%i.%02i\r\n\r\n", ver / 100, ver % 100));
-	statusbar->SetStatusText(_("..."), 1);
-	int widths[SIZE] = { 200, -2 };
+	statusbar->SetStatusText(wxString::Format("libZPlay v.%i.%02i\r\n\r\n", ver / 100, ver % 100));
+	statusbar->SetStatusText(_("..::BIN BEREIT :-)) ::.."), 1);
+	int widths[SIZE] = { 100, -2  -1};
 	statusbar->SetStatusWidths(SIZE, widths);
+
+	//wxRect rect;
+	//statusbar->GetFieldRect(1, rect);
+	//wxGauge* progress = new wxGauge(statusbar, 10006, 100, rect.GetPosition(), rect.GetSize(), wxGA_SMOOTH);
+
 #endif
 
 }
@@ -107,7 +104,7 @@ void MainWindow::Init_Components(int h, int w)
 	basicListView = new ListviewControl(this, wxID_ANY, wxDefaultPosition, wxSize(w, h));
 	basicListView->Bind(wxEVT_LEFT_DCLICK, &MainWindow::onListClick ,this);
 	basicListView->Bind(wxEVT_CHAR, &MainWindow::onChar, this);
-
+	basicListView->Bind(wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK, &MainWindow::onRightClickMenu, this);
 	sizer->Add(basicListView, 0, wxEXPAND | wxALL, 0);
 	this->SetSizer(sizer);
 	this->Layout();
@@ -158,7 +155,7 @@ void MainWindow::OnSize(wxSizeEvent& event)
 	basicListView->SetSize(size.GetWidth() - 15, size.GetHeight() - 130);
 	MainWindow::SetTitle(wxString::Format("Music Player 0.1 WxWidgets Projekt %d x %d", MainWindow::GetSize().y, MainWindow::GetSize().x));
 
-
+	return;
 }
 
 void MainWindow::OnMove(wxSizeEvent& event)
@@ -232,6 +229,7 @@ void MainWindow::CreateMenu()
 
 	SetMenuBar(menubar);
 
+	return;
 }
 
 void MainWindow::CreateToolbar()
@@ -283,6 +281,7 @@ void MainWindow::CreateToolbar()
 	toolbar->AddTool(wxID_ANY, _("PAUSE"), toolbarBitmaps[4]);
 
 	toolbar->Realize();
+	return;
 }
 
 void MainWindow::onExit(wxCommandEvent& event)
@@ -297,7 +296,8 @@ void MainWindow::onExit(wxCommandEvent& event)
 	if (answer != wxNO)
 	{	
 		mconfig.savexml(this);
-		
+			
+
 		Destroy();
 		return;
 	}
@@ -313,6 +313,8 @@ void MainWindow::onAbout_Dlg(wxCommandEvent& event)
 
 	}
 	about->Destroy();
+
+	return;
 }
 
 void MainWindow::onAddDirectory(wxCommandEvent& event)
@@ -323,16 +325,18 @@ void MainWindow::onAddDirectory(wxCommandEvent& event)
 
 	if (path.size() != NULL) {
 
-		LoadFilesVec((boost::filesystem::path)path.wc_str());
-		//std::thread workerthread(&MainWindow::LoadFilesVec, (boost::filesystem::path)path.wc_str() );
-		//boost::thread workerthread(&MainWindow::LoadFilesVec, &(boost::filesystem::path)path1);
-		//workerthread.join();
+		//LoadFilesVec((boost::filesystem::path)path.wc_str());	
+		boost::thread* thr = new boost::thread(boost::bind(&MainWindow::LoadFilesVec, this, (boost::filesystem::path)path.wx_str()));		
 	}
-
+	return;
 }
 
 void MainWindow::onAddFiles(wxCommandEvent& event)
 {
+	wxStopWatch sw;
+
+	// ListCtrl Item Counter Default 0
+	int count = 0;
 
 	wxArrayString wx_str_arry;
 
@@ -342,12 +346,46 @@ void MainWindow::onAddFiles(wxCommandEvent& event)
 	if (openFileDialog.ShowModal() == wxID_OK) {
 
 		openFileDialog.GetFilenames(wx_str_arry);
+		
 
 		for (auto filename : wx_str_arry)
 		{
+			this->update_status(wxString::Format("Scan Files: %s", filename.c_str()));
 
+			mplayer.ScanFile(this->player, filename);			
 
 		}
+
+
+		int num_count = basicListView->GetItemCount();
+
+		if (num_count != 0) {
+			count = num_count;
+		}
+
+		for (auto mystr : mplayer.i_file)
+			{
+				
+			basicListView->items.push_back({count,
+											mystr.stitle,
+											mystr.salbum,
+											mystr.stime,
+											mystr.sabtastrate,
+											mystr.ssamplerate,
+											mystr.spath
+				});
+			
+			count++;
+
+			basicListView->RefreshAfterUpdate();
+			basicListView->SetFocus();
+			basicListView->SetItemState(0, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+			
+		}
+
+		mplayer.struc_delete();
+		update_status(wxString::Format("Datein %d gescannt und adding... in %ld ms/s", count, sw.Time()));
+
 	}
 	return;     // the user changed idea...
 
@@ -378,6 +416,14 @@ void MainWindow::onListClick(wxMouseEvent& event)
 	
 	player->OpenFileW(wxString::Format("%s", info.m_text.c_str()),sfAutodetect);
 	player->Play();
+
+	/*
+	* Start Thread für Timer und Updates
+	*/
+	boost::thread* thr = new boost::thread(boost::bind(&MainWindow::ThreadWorker, this, statusbar));
+	
+
+
 }
 
 void MainWindow::onChar(wxKeyEvent& event)
@@ -486,6 +532,10 @@ void MainWindow::onDeleteAllItems(wxCommandEvent& event)
 
 	int del_items = basicListView->GetItemCount();
 
+	while (!basicListView->items.empty()) {
+		basicListView->items.pop_back();
+	}
+
 	basicListView->DeleteAllItems();
 
 	wxLogDebug(wxString::Format("gelöschte %d items in %ld ms", del_items, sw.Time()));
@@ -500,9 +550,47 @@ void MainWindow::onSliderScrollVol(wxScrollEvent& event)
 
 }
 
-void MainWindow::ThreadWorker(ZPlay* instz, boost::filesystem::path p)
+void MainWindow::onRightClickMenu(wxListEvent& event)
 {
+	// Show popupmenu at position
+	
+	wxMenu menu(wxT("Quick-Menü"));
+	menu.Append(wxID_ANY, wxT("&ID3 Info"));
+	menu.Append(wxID_ANY, wxT("&Datein Konvertieren"));
+	menu.Append(wxID_ANY, wxT("&Equalizer"));
+	menu.Append(wxID_ANY, wxT("&Streaming ICE/SHOUTCAST"));
+	menu.Append(wxID_ANY, wxT("&Einstellungen"));
+	menu.AppendSeparator();
+	menu.Append(wxID_ANY, wxT("&Beenden"));
+	PopupMenu(&menu, event.GetPoint());
 
+}
+
+void MainWindow::ThreadWorker(wxStatusBar* bar)
+{
+	int run = 1;	
+	TStreamStatus status;
+
+	TStreamTime pos;
+	player->GetStatus(&status);
+
+	while (run)
+	{
+
+
+		player->GetPosition(&pos);
+		int bitratez = player->GetBitrate(0);
+
+		int bitratez1 = player->GetBitrate(0);
+		wxString bitrate = wxString::Format("%04i kbps", bitratez1);
+		wxString time = wxString::Format("%02i: %02i : %02i", pos.hms.hour, pos.hms.minute, pos.hms.second);
+		bar->SetStatusText(wxString::Format("Playing.. Bitrate: [ %s ] - Time:[ %s ]", bitrate, time), 1);
+
+		if (status.fPlay == 0) {
+			run = 0;
+		}
+
+	}
 }
 
 void MainWindow::LoadFilesVec(boost::filesystem::path p)

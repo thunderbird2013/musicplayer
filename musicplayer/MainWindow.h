@@ -59,11 +59,13 @@ public:
     void onPrevTrack(wxCommandEvent& event);
     void onDeleteAllItems(wxCommandEvent& event);
     void onSliderScrollVol(wxScrollEvent& event);    
-    void ThreadWorker(ZPlay* instz, boost::filesystem::path p);
-
+    void onRightClickMenu(wxListEvent& event);
+    void ThreadWorker(wxStatusBar* bar);
+    void update_status(wxString message);    
     //GLobal Variables
     long style;
     int vol_pos;
+    wxStatusBar* statusbar;
 
     LibZPlayer mplayer;   
     
@@ -76,8 +78,7 @@ private:
     wxSlider* slider;
     void Init_Components(int h, int w);
     void CreateMenu();
-    void CreateToolbar();
-    void update_status(wxString message);
+    void CreateToolbar();    
     void LoadFilesVec(boost::filesystem::path p);   
     wxVector<wxString> GetScanFiles(boost::filesystem::path p);
     void additems(int id, const string& titel, const string& artist, const string& time, const string& encoder, const string& bitrate, const string& path);    

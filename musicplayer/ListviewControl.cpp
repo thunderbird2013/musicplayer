@@ -8,8 +8,8 @@ ListviewControl::ListviewControl(wxWindow* parent, const wxWindowID id, const wx
     this->AppendColumn("Titel/Track");
     this->AppendColumn("Artist/Album");
     this->AppendColumn("Time");
-    this->AppendColumn("Encoder");
-    this->AppendColumn("Bitrate");
+    this->AppendColumn("Abtastrate");
+    this->AppendColumn("Samplrate");
     this->AppendColumn("Datei-Path");
 
     this->SetColumnWidth(0, 30);
