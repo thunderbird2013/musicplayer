@@ -338,12 +338,7 @@ void MainWindow::onAddDirectory(wxCommandEvent& event)
 
 	if (path.size() != NULL) {
 
-		boost::thread* thr = new boost::thread(boost::bind(
-														   &MainWindow::LoadFilesVec, 
-																				this, 
-											  (boost::filesystem::path)path.wx_str(),
-				        								   				basicListView)
-		);		
+		boost::thread* thr = new boost::thread( boost::bind( &MainWindow::LoadFilesVec, this, ( boost::filesystem::path )path.wx_str(), basicListView ) );		
 	}
 	return;
 }
@@ -441,11 +436,7 @@ void MainWindow::onListClick(wxMouseEvent& event)
 	/*
 	* Start Thread für Timer und Updates
 	*/
-	boost::thread* thr = new boost::thread(boost::bind(
-														&MainWindow::ThreadWorker, 
-																			 this, 
-																		statusbar)
-	);
+	boost::thread* thr = new boost::thread( boost::bind( &MainWindow::ThreadWorker, this, statusbar ) );
 	
 }
 
