@@ -30,15 +30,17 @@ class LibZPlayer
 		ZPlay* inst;
 
 		// EVENT FUNCTIONS
-		bool OnPlayTrack(ZPlay* inst,wchar_t* z_filename);
+		bool onPlayTrack(ZPlay* inst,wchar_t* z_filename);
+		void onStop(ZPlay* inst);
+		void onPause(ZPlay* inst);
 		wxVector<wxString> GetSoundCard(ZPlay* inst);
 		void ScanFile(ZPlay* inst, const wchar_t* z_filename);
-		// INFO GET SET
-		int ZGetVersion(ZPlay* inst);		
-		wxVector<fscan> i_file;
-		void struc_delete();
+		// INFO GET SET			
 		void play_worker(ZPlay* inst, wxWindow* parent, wxStatusBar* bar);
 		int GetMasterVolume(ZPlay* inst);
+		int  ZGetVersion(ZPlay* inst);
+		void struc_delete();
+		wxVector<fscan> i_file;
 	private:
 			
 };

@@ -28,6 +28,9 @@
 wxDEFINE_EVENT(wxID_ADDFILES, wxCommandEvent);
 wxDEFINE_EVENT(wxID_NEXTTRACK, wxCommandEvent);
 wxDEFINE_EVENT(wxID_PREVTRACK, wxCommandEvent);
+wxDEFINE_EVENT(wxID_PAUSE, wxCommandEvent);
+wxDEFINE_EVENT(wxID_PLAY, wxCommandEvent);
+wxDEFINE_EVENT(wxID_STOPn, wxCommandEvent);
 wxDEFINE_EVENT(wxID_DELLITEMSALL, wxCommandEvent);
 wxDEFINE_EVENT(wxID_SLIDER_VOL, wxScrollEvent);
 wxDEFINE_EVENT(wxID_RIGHT_CLICK, wxListEvent);
@@ -40,6 +43,8 @@ EVT_MENU(wxID_INFO, MainWindow::onAbout_Dlg)
 EVT_MENU(wxID_EXIT, MainWindow::onExit)
 EVT_MENU(wxID_NEXTTRACK, MainWindow::onNextTrack)
 EVT_MENU(wxID_PREVTRACK, MainWindow::onPrevTrack)
+EVT_MENU(wxID_STOPn, MainWindow::onStop)
+EVT_MENU(wxID_PAUSE, MainWindow::onPause)
 EVT_MENU(wxID_DELLITEMSALL, MainWindow::onDeleteAllItems)
 EVT_LEFT_DCLICK(MainWindow::onListClick)
 EVT_CHAR(MainWindow::onChar)
@@ -61,13 +66,15 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, const wxString& title, c
 	// Create Toolbar
 	MainWindow::CreateToolbar();		
 	
-	//Connect Event Handlers
+	//Custom Event Handlers
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onDeleteAllItems, this, wxID_DELLITEMSALL);
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onAddFiles, this, wxID_ADDFILES);
-	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onExit, this, wxID_EXIT);
-	Bind(wxEVT_SIZE, &MainWindow::OnSize, this);
+	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onExit, this, wxID_EXIT);	
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onAbout_Dlg, this, wxID_INFO);
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onAddDirectory, this, wxID_ADD);
+	// Static Event Handlers
+	Bind(wxEVT_CLOSE_WINDOW, &MainWindow::onCloseWindow, this);
+	Bind(wxEVT_SIZE, &MainWindow::OnSize, this);
 
 	Connect(wxID_SLIDER_VOL, wxEVT_COMMAND_SLIDER_UPDATED, wxScrollEventHandler(MainWindow::onSliderScrollVol));
 
@@ -260,7 +267,13 @@ void MainWindow::CreateToolbar()
 	
 	//Slider Init
 	slider = new wxSlider(toolbar, wxID_SLIDER_VOL, 0, 0, 10, wxDefaultPosition, wxSize(150, -1), style = wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_BOTTOM);	
+	
+	int set_vol = mplayer.GetMasterVolume(this->player);
+	
+	//wxMessageBox(wxString::Format(wxT("%d"), (int)set_vol), _("Vol Set Integer"), wxOK_DEFAULT);
+	//slider->SetValue(set_vol);
 	toolbar->AddControl(slider);
+
 	toolbar->AddSeparator();
 
 	wxComboBox* combo = new wxComboBox(toolbar, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(200, -1), 0, NULL, wxCB_READONLY);
@@ -276,9 +289,9 @@ void MainWindow::CreateToolbar()
 	toolbar->AddTool(wxID_ANY, _("REWIND"), toolbarBitmaps[6]);
 	toolbar->AddTool(wxID_ANY, _("FORWARD"), toolbarBitmaps[5]);
 	toolbar->AddTool(wxID_NEXTTRACK, _("NEXT"), toolbarBitmaps[1]);
-	toolbar->AddTool(wxID_ANY, _("PLAY"), toolbarBitmaps[3]);
-	toolbar->AddTool(wxID_ANY, _("STOP"), toolbarBitmaps[2]);
-	toolbar->AddTool(wxID_ANY, _("PAUSE"), toolbarBitmaps[4]);
+	toolbar->AddTool(wxID_PLAY, _("PLAY"), toolbarBitmaps[3]);
+	toolbar->AddTool(wxID_STOPn, _("STOP"), toolbarBitmaps[2]);
+	toolbar->AddTool(wxID_PAUSE, _("PAUSE"), toolbarBitmaps[4]);
 
 	toolbar->Realize();
 	return;
@@ -325,8 +338,12 @@ void MainWindow::onAddDirectory(wxCommandEvent& event)
 
 	if (path.size() != NULL) {
 
-		//LoadFilesVec((boost::filesystem::path)path.wc_str());	
-		boost::thread* thr = new boost::thread(boost::bind(&MainWindow::LoadFilesVec, this, (boost::filesystem::path)path.wx_str()));		
+		boost::thread* thr = new boost::thread(boost::bind(
+														   &MainWindow::LoadFilesVec, 
+																				this, 
+											  (boost::filesystem::path)path.wx_str(),
+				        								   				basicListView)
+		);		
 	}
 	return;
 }
@@ -340,7 +357,11 @@ void MainWindow::onAddFiles(wxCommandEvent& event)
 
 	wxArrayString wx_str_arry;
 
-	wxFileDialog openFileDialog(this, _("Öffne Audio Datein"), "", "", "Mp3 files (*.mp3)|*.mp3", wxFD_OPEN | wxFD_FILE_MUST_EXIST | OFN_ALLOWMULTISELECT);
+	wxFileDialog openFileDialog(this, _("Öffne Audio Datein"), 
+											"", 
+											"", 
+	"Mp3 files (*.mp3)|*.mp3| Flac Datein (*.flac)| *.flac | Wav Datein (*.wav)| *.wav | Ogg Datein (*.ogg)| *.ogg | AAC Datein (*.aac)| *.aac", 
+										wxFD_OPEN | wxFD_FILE_MUST_EXIST | OFN_ALLOWMULTISELECT);
 
 
 	if (openFileDialog.ShowModal() == wxID_OK) {
@@ -420,10 +441,12 @@ void MainWindow::onListClick(wxMouseEvent& event)
 	/*
 	* Start Thread für Timer und Updates
 	*/
-	boost::thread* thr = new boost::thread(boost::bind(&MainWindow::ThreadWorker, this, statusbar));
+	boost::thread* thr = new boost::thread(boost::bind(
+														&MainWindow::ThreadWorker, 
+																			 this, 
+																		statusbar)
+	);
 	
-
-
 }
 
 void MainWindow::onChar(wxKeyEvent& event)
@@ -526,6 +549,21 @@ void MainWindow::onPrevTrack(wxCommandEvent& event)
 		*/
 }
 
+void MainWindow::onStop(wxCommandEvent& event)
+{
+	mplayer.onStop(this->player);
+}
+
+void MainWindow::onPause(wxCommandEvent& event)
+{
+	mplayer.onPause(this->player);
+}
+
+void MainWindow::onPlay(wxCommandEvent& event)
+{
+
+}
+
 void MainWindow::onDeleteAllItems(wxCommandEvent& event)
 {
 	wxStopWatch sw;
@@ -566,6 +604,12 @@ void MainWindow::onRightClickMenu(wxListEvent& event)
 
 }
 
+void MainWindow::onCloseWindow(wxCloseEvent& event)
+{
+	mplayer.onStop(this->player);
+	this->Destroy();
+}
+
 void MainWindow::ThreadWorker(wxStatusBar* bar)
 {
 	int run = 1;	
@@ -593,7 +637,7 @@ void MainWindow::ThreadWorker(wxStatusBar* bar)
 	}
 }
 
-void MainWindow::LoadFilesVec(boost::filesystem::path p)
+void MainWindow::LoadFilesVec(boost::filesystem::path p, ListviewControl* list)
 {
 	wxStopWatch sw;		
 	
@@ -622,50 +666,19 @@ void MainWindow::LoadFilesVec(boost::filesystem::path p)
 		int bitratez = player->GetBitrate(0);
 		wxString bitrate = wxString::Format("%04i kbps", bitratez);		
 				
-		basicListView->items.push_back({ count, id3_info.Title, id3_info.AlbumArtist, time.c_str(), id3_info.Year, bitrate.c_str(), filename.c_str() });
+		list->items.push_back({ count, id3_info.Title, id3_info.AlbumArtist, time.c_str(), id3_info.Year, bitrate.c_str(), filename.c_str() });
 
-		count++;
-
-		basicListView->RefreshAfterUpdate();
-		basicListView->SetFocus();
-		basicListView->SetItemState(0, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);		
+		count++;				
 		
-	}
+		list->RefreshAfterUpdate();
+
+	}	
+
+	list->SetFocus();
+	list->SetItemState(0, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+
 	wxLogDebug(wxString::Format("Datein: %d gescannt und hinzugefügt in %ld ms/s", count, sw.Time()));
 	
 	update_status(wxString::Format("Datein %d gescannt und adding... in %ld ms/s", count, sw.Time()));
 
 }
-
-
-/* ITEM DATA
-	int id;
-	wxString titel;
-	wxString artist;
-	wxString time;
-	wxString encoder;
-	wxString bitrate;
-	wxString path;
-*/
-void MainWindow::additems(int id, const string& titel, const string& artist, const string& time, const string& encoder, const string& bitrate, const string& path)
-{
-	int index = basicListView->GetItemCount();
-
-	basicListView->InsertItem(index, std::to_string(id));
-	basicListView->SetItem(index, 1, titel);
-	basicListView->SetItem(index, 2, artist);
-	basicListView->SetItem(index, 3, time);
-	basicListView->SetItem(index, 4, encoder);
-	basicListView->SetItem(index, 5, bitrate);
-	basicListView->SetItem(index, 6, path);
-
-
-	ItemData data{ id, titel, artist, time, encoder, bitrate, path };
-
-
-
-	//auto dataPtr = std::make_unique<ItemData>(data);
-	//basicListView->SetItemData(index, reinterpret_cast<wxIntPtr>(dataPtr.get()));
-
-}
-

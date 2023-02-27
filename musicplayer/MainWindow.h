@@ -57,11 +57,15 @@ public:
     void onChar(wxKeyEvent& event);
     void onNextTrack(wxCommandEvent& event);
     void onPrevTrack(wxCommandEvent& event);
+    void onStop(wxCommandEvent& event);
+    void onPause(wxCommandEvent& event);
+    void onPlay(wxCommandEvent& event);
     void onDeleteAllItems(wxCommandEvent& event);
     void onSliderScrollVol(wxScrollEvent& event);    
     void onRightClickMenu(wxListEvent& event);
+    void onCloseWindow(wxCloseEvent& event);
     void ThreadWorker(wxStatusBar* bar);
-    void update_status(wxString message);    
+    void update_status(wxString message);        
     //GLobal Variables
     long style;
     int vol_pos;
@@ -79,9 +83,8 @@ private:
     void Init_Components(int h, int w);
     void CreateMenu();
     void CreateToolbar();    
-    void LoadFilesVec(boost::filesystem::path p);   
-    wxVector<wxString> GetScanFiles(boost::filesystem::path p);
-    void additems(int id, const string& titel, const string& artist, const string& time, const string& encoder, const string& bitrate, const string& path);    
+    void LoadFilesVec(boost::filesystem::path p, ListviewControl* list);
+    wxVector<wxString> GetScanFiles(boost::filesystem::path p);    
 };
 
 

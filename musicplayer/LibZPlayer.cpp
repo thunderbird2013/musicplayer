@@ -10,7 +10,30 @@ LibZPlayer::LibZPlayer(void)
 LibZPlayer::~LibZPlayer()
 {}
 
-bool LibZPlayer::OnPlayTrack(ZPlay* inst,wchar_t* z_filename)
+
+void LibZPlayer::onStop(ZPlay* inst)
+{
+	inst->Stop();
+}
+
+void LibZPlayer::onPause(ZPlay* inst)
+{
+
+	TStreamStatus status;
+	inst->GetStatus(&status);
+
+	if (status.fPlay)
+	{
+		inst->Pause();
+	}
+	else
+	{
+		inst->Resume();
+	}
+
+}
+
+bool LibZPlayer::onPlayTrack(ZPlay* inst,wchar_t* z_filename)
 {
 
 	if (inst->OpenFileW(z_filename, sfAutodetect) == 0)
@@ -89,6 +112,7 @@ void LibZPlayer::ScanFile(ZPlay* inst, const wchar_t* z_filename)
 	}
 	return;
 }
+
 void LibZPlayer::struc_delete()
 {
 	while (!i_file.empty()) {
@@ -96,22 +120,27 @@ void LibZPlayer::struc_delete()
 	}
 
 }
+
 int LibZPlayer::GetMasterVolume(ZPlay* inst)
 {
-	unsigned int rvol = 0;
-	unsigned int lvol = 0;
+	unsigned int rvol;
+	unsigned int lvol;
 
 	inst->GetMasterVolume(&rvol, &lvol);
-
+	//inst->GetPlayerVolume(&rvol, &lvol);
 	/*
 	* Matervol zu ein Rechnen rvol + lvol / 2 
 	*							50 + 50 / 2 = 50 Vol
 	* 
 	*/
-	unsigned int mastervol = rvol + lvol / 2;
+	int mastervol = rvol + lvol;
 
 	return mastervol;
 }
+
+/*
+* Soll der Update Thread werden wird noch überarbeitet ist momentan in der MainWindow Implemetiert
+*/
 void LibZPlayer::play_worker(ZPlay* inst, wxWindow* parent, wxStatusBar* bar)
 {
 	int run = 1;
