@@ -133,8 +133,8 @@ int LibZPlayer::GetMasterVolume(ZPlay* inst)
 	*							50 + 50 / 2 = 50 Vol
 	* 
 	*/
-	int mastervol = rvol + lvol;
-
+	int mastervol = this->RoundNum(rvol) + this->RoundNum(lvol) / 100;
+	//wxLogMessage(wxString::Format("RVol:%d LVol:%d TotalVol: %d", (int)this->RoundNum(rvol), (int)this->RoundNum(lvol), (int)mastervol ));
 	return mastervol;
 }
 
@@ -162,7 +162,11 @@ void LibZPlayer::play_worker(ZPlay* inst, wxWindow* parent, wxStatusBar* bar)
 
 }
 
-
+int LibZPlayer::RoundNum(int num)
+{
+	int rem = num % 10;
+	return rem >= 5 ? (num - rem + 10) : (num - rem);
+}
 
 
 int LibZPlayer::ZGetVersion(ZPlay* inst)

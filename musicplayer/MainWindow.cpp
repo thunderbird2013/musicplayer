@@ -408,10 +408,13 @@ void MainWindow::onAddFiles(wxCommandEvent& event)
 }
 
 void MainWindow::onListClick(wxMouseEvent& event)
-{
+{	
+
 	//	int count = basicListView->GetItemCount();
 	//	wxMessageBox(wxString::Format(wxT("%d"), (int)count), _("hier"), wxOK_DEFAULT);
-	player->Stop();
+	
+	this->player->Stop();
+	this->player->Close();
 
 	long itemIndex = -1;
 	wxListItem info;
@@ -430,14 +433,22 @@ void MainWindow::onListClick(wxMouseEvent& event)
 	}
 	
 	
-	player->OpenFileW(wxString::Format("%s", info.m_text.c_str()),sfAutodetect);
-	player->Play();
+	this->player->OpenFileW(wxString::Format("%s", info.m_text.c_str()),sfAutodetect);
+	this->player->Play();
 
 	/*
 	* Start Thread für Timer und Updates
+	* Klasse schreiben so funz das net und Crasht :(
 	*/
-	boost::thread* thr = new boost::thread( boost::bind( &MainWindow::ThreadWorker, this, statusbar ) );
+	//boost::thread* thr = new boost::thread( boost::bind( &MainWindow::ThreadWorker, this, statusbar ) );
+	//boost::thread* thr = new boost::thread(&MainWindow::ThreadWorker, this, statusbar);
+
 	
+	  boost::thread* thr = new boost::thread (&MainWindow::ThreadWorker, this, statusbar, this->player);
+
+	
+	
+
 }
 
 void MainWindow::onChar(wxKeyEvent& event)
@@ -601,29 +612,30 @@ void MainWindow::onCloseWindow(wxCloseEvent& event)
 	this->Destroy();
 }
 
-void MainWindow::ThreadWorker(wxStatusBar* bar)
+void MainWindow::ThreadWorker(wxStatusBar* bar, ZPlay* inst)
 {
-	int run = 1;	
+	bool running = true;	
 	TStreamStatus status;
-
 	TStreamTime pos;
-	player->GetStatus(&status);
 
-	while (run)
+	while (running)
 	{
+		inst->GetStatus(&status);
 
-
-		player->GetPosition(&pos);
-		int bitratez = player->GetBitrate(0);
-
-		int bitratez1 = player->GetBitrate(0);
-		wxString bitrate = wxString::Format("%04i kbps", bitratez1);
-		wxString time = wxString::Format("%02i: %02i : %02i", pos.hms.hour, pos.hms.minute, pos.hms.second);
-		bar->SetStatusText(wxString::Format("Playing.. Bitrate: [ %s ] - Time:[ %s ]", bitrate, time), 1);
+		//wxLogMessage(wxString::Format("%d", status.fPlay));
 
 		if (status.fPlay == 0) {
-			run = 0;
-		}
+			wxLogMessage(wxT("Thread wird Beendet... with return"));
+			running = false;
+		}		
+		inst->GetPosition(&pos);
+		int bitratez = inst->GetBitrate(0);
+
+		int bitratez1 = inst->GetBitrate(0);
+		wxString bitrate = wxString::Format("%04i kbps", bitratez1);
+		wxString time = wxString::Format("%02i:%02i:%02i", pos.hms.hour, pos.hms.minute, pos.hms.second);
+		bar->SetStatusText(wxString::Format("Playing.. Bitrate: [ %s ] - Time:[ %s ]", bitrate, time), 1);	
+		boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
 	}
 }

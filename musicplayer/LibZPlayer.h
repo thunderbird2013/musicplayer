@@ -40,6 +40,7 @@ class LibZPlayer
 		int GetMasterVolume(ZPlay* inst);
 		int  ZGetVersion(ZPlay* inst);
 		void struc_delete();
+		int  RoundNum(int num);
 		wxVector<fscan> i_file;
 	private:
 			

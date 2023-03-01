@@ -64,8 +64,8 @@ public:
     void onSliderScrollVol(wxScrollEvent& event);    
     void onRightClickMenu(wxListEvent& event);
     void onCloseWindow(wxCloseEvent& event);
-    void ThreadWorker(wxStatusBar* bar);
-    void update_status(wxString message);        
+    void ThreadWorker(wxStatusBar* bar, ZPlay* inst);
+    void update_status(wxString message); 
     //GLobal Variables
     long style;
     int vol_pos;

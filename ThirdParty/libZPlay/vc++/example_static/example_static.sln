@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example_static", "example_static.vcxproj", "{BA4B0576-02B0-4214-A88F-0BE15F645616}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x86 = Debug|x86
+		Release NASM|Win32 = Release NASM|Win32
+		Release NASM|x86 = Release NASM|x86
+		Release|Win32 = Release|Win32
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Debug|Win32.Build.0 = Debug|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Debug|x86.ActiveCfg = Debug|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Debug|x86.Build.0 = Debug|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Release NASM|Win32.ActiveCfg = Release|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Release NASM|Win32.Build.0 = Release|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Release NASM|x86.ActiveCfg = Release|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Release NASM|x86.Build.0 = Release|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Release|Win32.ActiveCfg = Release|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Release|Win32.Build.0 = Release|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Release|x86.ActiveCfg = Release|Win32
+		{BA4B0576-02B0-4214-A88F-0BE15F645616}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ADE1EAA5-A3F8-4D21-AB0E-EAE5ABEB4EC0}
+	EndGlobalSection
+EndGlobal

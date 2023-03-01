@@ -62,29 +62,29 @@ MAIN_ICON               ICON                    "musikspieler.ico"
 // RCDATA
 //
 
-PNG_STOP                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Stop.png"
+PNG_STOP                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Stop.png"
 
-PNG_PLAY                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Play-music.png"
+PNG_PLAY                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Play-music.png"
 
-PNG_NEXT                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Next track.png"
+PNG_NEXT                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Next track.png"
 
-PNG_PAUSE               RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Pause.png"
+PNG_PAUSE               RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Pause.png"
 
-PNG_LAST                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Last_track.png"
+PNG_LAST                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Last_track.png"
 
-PNG_FORWARD             RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Track-forward.png"
+PNG_FORWARD             RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Track-forward.png"
 
-PNG_REWIND              RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Track_rewind.png"
+PNG_REWIND              RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Track_rewind.png"
 
-PNG_ADD                 RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Add_32x32.png"
+PNG_ADD                 RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Add_32x32.png"
 
-PNG_FOLDER              RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Folder_32x32.png"
+PNG_FOLDER              RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Folder_32x32.png"
 
-PNG_INFO                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Information_32x32.png"
+PNG_INFO                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Information_32x32.png"
 
-PNG_EXIT                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Log Out_32x32.png"
+PNG_EXIT                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Log Out_32x32.png"
 
-PNG_OPEN                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\Release\\pixmaps\\Open_32x32.png"
+PNG_OPEN                RCDATA                  "H:\\C++\\Musikplayer\\musicplayer\\pixmaps\\Open_32x32.png"
 
 
 #endif    // Deutsch (Deutschland) resources
