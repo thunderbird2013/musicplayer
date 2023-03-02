@@ -1,28 +1,11 @@
+/*
+* MusicPlayer Minimalistik v 1.0
+* copyright (c) 2023 by Matthias Stoltze
+* 
+*/
 #define WIN32_LEAN_AND_MEAN
 
-//WX LIB
-#include <wx/artprov.h>
-#include <wx/msgdlg.h>
-
 #include "MainWindow.h"
-#include "ListviewControl.h"
-#include "resource.h"
-
-//Standart
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <random>
-#include <thread>
-
-
-#pragma comment(linker,"/manifestdependency:\"type='win32' "\
-               "name='Microsoft.Windows.Common-Controls' "\
-               "version='6.0.0.0' "\
-               "processorArchitecture='x86' "\
-               "publicKeyToken='6595b64144ccf1df' "\
-               "language='*' "\
-               "\"")
 
 
 wxDEFINE_EVENT(wxID_ADDFILES, wxCommandEvent);
@@ -160,7 +143,7 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 	wxSize size = this->GetSize();
 	basicListView->SetSize(size.GetWidth() - 15, size.GetHeight() - 130);
-	MainWindow::SetTitle(wxString::Format("Music Player 0.1 WxWidgets Projekt %d x %d", MainWindow::GetSize().y, MainWindow::GetSize().x));
+	MainWindow::SetTitle(wxString::Format(wxT("Music Player 0.1 WxWidgets Projekt %d x %d"), MainWindow::GetSize().y, MainWindow::GetSize().x));
 
 	return;
 }
@@ -266,12 +249,12 @@ void MainWindow::CreateToolbar()
 	toolbar->AddSeparator();
 	
 	//Slider Init
-	slider = new wxSlider(toolbar, wxID_SLIDER_VOL, 0, 0, 10, wxDefaultPosition, wxSize(150, -1), style = wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_BOTTOM);	
+	slider = new wxSlider(toolbar, wxID_SLIDER_VOL, 0, 0, 100, wxDefaultPosition, wxSize(150, -1), style = wxSL_HORIZONTAL | wxSL_BOTTOM | wxSL_TOP);
 	
 	int set_vol = mplayer.GetMasterVolume(this->player);
 	
 	//wxMessageBox(wxString::Format(wxT("%d"), (int)set_vol), _("Vol Set Integer"), wxOK_DEFAULT);
-	//slider->SetValue(set_vol);
+	slider->SetValue(set_vol);
 	toolbar->AddControl(slider);
 
 	toolbar->AddSeparator();
@@ -338,13 +321,17 @@ void MainWindow::onAddDirectory(wxCommandEvent& event)
 
 	if (path.size() != NULL) {
 
-		boost::thread* thr = new boost::thread( boost::bind( &MainWindow::LoadFilesVec, this, ( boost::filesystem::path )path.wx_str(), basicListView ) );		
+		boost::thread* thread_new = new boost::thread( boost::bind( &MainWindow::LoadFilesVec, this, ( boost::filesystem::path )path.wx_str(), basicListView ) );		
+		thread_new->detach();
 	}
 	return;
 }
 
 void MainWindow::onAddFiles(wxCommandEvent& event)
 {
+	/*
+	* | Flac Datein (*.flac)| *.flac | Wav Datein (*.wav)| *.wav | Ogg Datein (*.ogg)| *.ogg | AAC Datein (*.aac)| *.aac
+	*/
 	wxStopWatch sw;
 
 	// ListCtrl Item Counter Default 0
@@ -355,8 +342,8 @@ void MainWindow::onAddFiles(wxCommandEvent& event)
 	wxFileDialog openFileDialog(this, _("Öffne Audio Datein"), 
 											"", 
 											"", 
-	"Mp3 files (*.mp3)|*.mp3| Flac Datein (*.flac)| *.flac | Wav Datein (*.wav)| *.wav | Ogg Datein (*.ogg)| *.ogg | AAC Datein (*.aac)| *.aac", 
-										wxFD_OPEN | wxFD_FILE_MUST_EXIST | OFN_ALLOWMULTISELECT);
+											"Mp3 files (*.mp3)|*.mp3",
+											wxFD_OPEN | wxFD_FILE_MUST_EXIST | OFN_ALLOWMULTISELECT);
 
 
 	if (openFileDialog.ShowModal() == wxID_OK) {
@@ -445,7 +432,7 @@ void MainWindow::onListClick(wxMouseEvent& event)
 
 	
 	  boost::thread* thr = new boost::thread (&MainWindow::ThreadWorker, this, statusbar, this->player);
-
+	  thr->detach();
 	
 	
 
@@ -518,11 +505,13 @@ void MainWindow::onNextTrack(wxCommandEvent& event)
 		long list_top = basicListView->GetTopItem();
 		long list_pp = basicListView->GetCountPerPage();
 		long list_bottom = min(list_top + list_pp, list_total - 1);
+		//long setpage = list_top
 		//basicListView->SetScrollbar()
-		//wxMessageBox(wxString::Format(wxT("Sel = %d/%d/%d/%d"), list_bottom, list_pp, list_top, list_total));		
-		//basicListView->EnsureVisible((list_bottom - 1));
+		//wxMessageBox(wxString::Format(wxT("Sel = GetItemCount:%d | GetTopItem:%d | GetCountPerPage:%d | ListBottom:%d"), list_bottom, list_pp, list_top, list_total));		
+		//basicListView->EnsureVisible((list_total + 1));
+		//basicListView->SetScrollbar(list_total, lSelectedItem, 20, list_top, true);
 		
-
+		//basicListView->SetScrollPos(list_top - list_pp - 1 , lSelectedItem, true);
 
 }
 
@@ -578,15 +567,20 @@ void MainWindow::onDeleteAllItems(wxCommandEvent& event)
 
 	basicListView->DeleteAllItems();
 
-	wxLogDebug(wxString::Format("gelöschte %d items in %ld ms", del_items, sw.Time()));
+	wxLogDebug(wxString::Format(wxT("gelöschte %d items in %ld ms"), del_items, sw.Time()));
 	
 }
 
 void MainWindow::onSliderScrollVol(wxScrollEvent& event)
 {
-	vol_pos = slider->GetValue();
-	//wxMessageBox(wxString::Format(wxT("VOlume = %d"), vol_pos));
-	wxLogDebug(wxString::Format("Volume: %d", vol_pos));
+	vol_pos = this->slider->GetValue();	
+
+	//wxLogDebug(wxString::Format(wxT("Volume: %d"), vol_pos));
+
+	if (!this->player->SetMasterVolume(vol_pos, vol_pos))
+	{
+		wxLogDebug(wxString::Format(wxT("Kann lautstärke nicht Setzen [%s]"), this->player->GetError(), vol_pos));
+	}
 
 }
 
@@ -608,7 +602,7 @@ void MainWindow::onRightClickMenu(wxListEvent& event)
 
 void MainWindow::onCloseWindow(wxCloseEvent& event)
 {
-	mplayer.onStop(this->player);
+	this->mplayer.onStop(this->player);
 	this->Destroy();
 }
 
@@ -632,9 +626,9 @@ void MainWindow::ThreadWorker(wxStatusBar* bar, ZPlay* inst)
 		int bitratez = inst->GetBitrate(0);
 
 		int bitratez1 = inst->GetBitrate(0);
-		wxString bitrate = wxString::Format("%04i kbps", bitratez1);
-		wxString time = wxString::Format("%02i:%02i:%02i", pos.hms.hour, pos.hms.minute, pos.hms.second);
-		bar->SetStatusText(wxString::Format("Playing.. Bitrate: [ %s ] - Time:[ %s ]", bitrate, time), 1);	
+		wxString bitrate = wxString::Format(wxT("%04i kbps"), bitratez1);
+		wxString time = wxString::Format(wxT("%02i:%02i:%02i"), pos.hms.hour, pos.hms.minute, pos.hms.second);
+		bar->SetStatusText(wxString::Format(wxT("Playing.. Bitrate: [ %s ] - Time:[ %s ]"), bitrate, time), 1);	
 		boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
 	}
@@ -650,38 +644,43 @@ void MainWindow::LoadFilesVec(boost::filesystem::path p, ListviewControl* list)
 	for (auto& filename : GetScanFiles(p))
 	{
 
-		update_status(wxString::Format("Scan Files: %s", filename.c_str()));
-		
-		  player->OpenFileW(filename.c_str(), sfAutodetect);
+		this->update_status(wxString::Format("Scan Files: %s", filename.c_str()));
 
-		TID3InfoEx id3_info;
-		player->LoadID3Ex(&id3_info, 1);
+		mplayer.ScanFile(this->player, filename);		
 
-		TStreamInfo pinfo;
+	}
 
-		player->GetStreamInfo(&pinfo);
-		
-		wxString time = wxString::Format("%02i:%02i:%02i",
-			pinfo.Length.hms.hour,
-			pinfo.Length.hms.minute,
-			pinfo.Length.hms.second);
+		int num_count = basicListView->GetItemCount();
 
-		int bitratez = player->GetBitrate(0);
-		wxString bitrate = wxString::Format("%04i kbps", bitratez);		
-				
-		list->items.push_back({ count, id3_info.Title, id3_info.AlbumArtist, time.c_str(), id3_info.Year, bitrate.c_str(), filename.c_str() });
+		if (num_count != 0) {
+			count = num_count;
+		}
 
-		count++;				
-		
-		list->RefreshAfterUpdate();
+		for (auto mystr : mplayer.i_file)
+		{
 
-	}	
+			list->items.push_back({ count,
+											mystr.stitle,
+											mystr.salbum,
+											mystr.stime,
+											mystr.sabtastrate,
+											mystr.ssamplerate,
+											mystr.spath
+				});
 
-	list->SetFocus();
-	list->SetItemState(0, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+			count++;
 
-	wxLogDebug(wxString::Format("Datein: %d gescannt und hinzugefügt in %ld ms/s", count, sw.Time()));
+			list->RefreshAfterUpdate();
+			list->SetFocus();
+			list->SetItemState(0, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+
+		}
+
+		mplayer.struc_delete();
+
+		wxLogDebug(wxString::Format(wxT("Datein: %d gescannt und hinzugefügt in %ld ms/s"), count, sw.Time()));
+
+		update_status(wxString::Format(wxT("Datein %d gescannt und adding... in %ld ms/s"), count, sw.Time()));
 	
-	update_status(wxString::Format("Datein %d gescannt und adding... in %ld ms/s", count, sw.Time()));
 
 }

@@ -1,9 +1,20 @@
 #pragma once
 
+//WX LIB
+#include <wx/artprov.h>
+#include <wx/msgdlg.h>
 #include <wx/wxprec.h>
 #include <wx/listctrl.h>
-#include <unordered_set>
+
+//Standart
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <random>
+#include <thread>
 #include <vector>
+
+//Meine Klassen
 #include "ListviewControl.h"
 #include "browsedialog.h"
 #include "LogTarget.h"
@@ -23,11 +34,17 @@ appicon ICON "IDI_ICON1"
 #include "boost/filesystem.hpp"
 #include "boost/thread.hpp"
 
-#ifndef wxHAS_IMAGES_IN_RESOURCES
-    #include "musikspieler.xpm"
-#endif
 
 #include "resource.h"
+
+
+#pragma comment(linker,"/manifestdependency:\"type='win32' "\
+               "name='Microsoft.Windows.Common-Controls' "\
+               "version='6.0.0.0' "\
+               "processorArchitecture='x86' "\
+               "publicKeyToken='6595b64144ccf1df' "\
+               "language='*' "\
+               "\"")
 
 class MainWindow: public wxFrame
 {
@@ -66,17 +83,19 @@ public:
     void onCloseWindow(wxCloseEvent& event);
     void ThreadWorker(wxStatusBar* bar, ZPlay* inst);
     void update_status(wxString message); 
-    //GLobal Variables
+
+    //Global Variables
     long style;
     int vol_pos;
     wxStatusBar* statusbar;
-
     LibZPlayer mplayer;   
     
+    // Event Tables
     DECLARE_EVENT_TABLE()         
    
 
 private:   
+
     ListviewControl *basicListView;   
     wxToolBar* toolbar;
     wxSlider* slider;

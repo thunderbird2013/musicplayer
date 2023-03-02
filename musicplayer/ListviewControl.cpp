@@ -4,13 +4,13 @@
 ListviewControl::ListviewControl(wxWindow* parent, const wxWindowID id, const wxPoint& pos, const wxSize& size)
     : wxListCtrl(parent, id, pos, size, wxLC_REPORT | wxLC_VIRTUAL | wxLC_SINGLE_SEL | wxLC_VRULES | wxSUNKEN_BORDER)
 {    
-    this->AppendColumn("ID");
-    this->AppendColumn("Titel/Track");
-    this->AppendColumn("Artist/Album");
-    this->AppendColumn("Time");
-    this->AppendColumn("Abtastrate");
-    this->AppendColumn("Samplrate");
-    this->AppendColumn("Datei-Path");
+    this->AppendColumn(wxT("ID"));
+    this->AppendColumn(wxT("Titel/Track"));
+    this->AppendColumn(wxT("Artist/Album"));
+    this->AppendColumn(wxT("Time"));
+    this->AppendColumn(wxT("Abtastrate"));
+    this->AppendColumn(wxT("Samplerate"));
+    this->AppendColumn(wxT("Datei-Path"));
 
     this->SetColumnWidth(0, 30);
     this->SetColumnWidth(1, 250);
