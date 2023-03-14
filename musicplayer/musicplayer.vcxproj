@@ -115,6 +115,9 @@
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,7 +171,8 @@
     <ClCompile Include="LogTarget.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="LibZPlayer.cpp" />
-    <ClCompile Include="XmlConfig.cpp" />
+    <ClCompile Include="SettingDialog.cpp" />
+    <ClCompile Include="XmlReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="About_Dlg.h" />
@@ -181,7 +185,8 @@
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="LibZPlayer.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="XmlConfig.h" />
+    <ClInclude Include="SettingDialog.h" />
+    <ClInclude Include="XmlReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

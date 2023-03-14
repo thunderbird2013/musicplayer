@@ -43,6 +43,24 @@ void ListviewControl::RefreshAfterUpdate()
     this->Refresh();
 }
 
+void ListviewControl::ChangeofTwoColorListView(long MaxItems)
+{
+
+    for (int i = 0; i < MaxItems; i++)
+    {
+        this->InsertItem(0, 0);
+
+        if (this->GetItemCount() % 2) //Check even or odd number
+            this->SetItemBackgroundColour(0, wxColour(255, 0, 0)); //red wxColour( 255, 0, 0 )
+        //else
+            //this->SetItemBackgroundColour(0, wxColour( 0, 255, 255 )); //blue 0 0 255
+
+        //num = wxString::Format(_T("Line:  %d "), i);
+
+        //m_listCtrl1->SetItem(0, 0, num);
+    }
+}
+
 wxString ListviewControl::TextbyColum(long nIndex, int nCol)
 {
     wxListItem Item; // the item whose text we want

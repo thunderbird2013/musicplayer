@@ -89,8 +89,32 @@ void LibZPlayer::ScanFile(ZPlay* inst, const wchar_t* z_filename)
 		//newdata.stitle = id3_info.Title;
 		//this->i_file.push_back(newdata);
 
+		
+		/* Thanks for function https://github.com/holosiek/FrozeT */
+		wxString toTitle	= z_filename;
+		size_t lastSlash	= toTitle.find_last_of(L"/\\");
+		size_t lastDot		= toTitle.find_last_of(L".");
+		size_t lastHyphen   = toTitle.find_last_of(L"-");
+		/* END*/
+
+
+		/* ID3 INFO STRINGS*/
+		wxString id3_title;
+		/* ENDE */
+
+
+		if (id3_info.Title != 0)
+		{			
+			id3_title = toTitle.substr(lastHyphen + 2, lastDot - lastHyphen - 2);
+#ifdef MPDEBUG
+			wxMessageBox(id3_title,_("MPDEBUG"));
+#endif // MPDEBUG
+		}else{
+			id3_title = id3_info.Title;
+		}
+
 		this->i_file.push_back({
-						   id3_info.Title,
+						   id3_title,
 						   id3_info.Artist,
 						   id3_info.Album,
 						   id3_info.Year,

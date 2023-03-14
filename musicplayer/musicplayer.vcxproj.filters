@@ -33,7 +33,10 @@
     <ClCompile Include="ListviewControl.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="XmlConfig.cpp">
+    <ClCompile Include="XmlReader.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingDialog.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,7 +71,10 @@
     <ClInclude Include="LibZPlayer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="XmlConfig.h">
+    <ClInclude Include="XmlReader.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingDialog.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

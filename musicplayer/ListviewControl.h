@@ -17,6 +17,7 @@ public:
     virtual wxString OnGetItemText(long index, long column)const wxOVERRIDE;    
     void additems(int id, const string& titel, const string& artist, const string& time, const string& encoder, const string& bitrate, const string& path);
     void RefreshAfterUpdate();
+    void ChangeofTwoColorListView(long MaxItems);
     wxString TextbyColum(long nIndex, int nCol);
     wxVector <ItemData> items;
 };

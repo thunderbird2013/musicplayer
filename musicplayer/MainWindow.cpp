@@ -17,9 +17,11 @@ wxDEFINE_EVENT(wxID_STOPn, wxCommandEvent);
 wxDEFINE_EVENT(wxID_DELLITEMSALL, wxCommandEvent);
 wxDEFINE_EVENT(wxID_SLIDER_VOL, wxScrollEvent);
 wxDEFINE_EVENT(wxID_RIGHT_CLICK, wxListEvent);
+wxDEFINE_EVENT(wxID_SETTINGS, wxCommandEvent);
 
 
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
+EVT_MENU(wxID_SETTINGS, MainWindow::onSettingsDialog)
 EVT_MENU(wxID_ADDFILES, MainWindow::onAddFiles)
 EVT_MENU(wxID_ADD, MainWindow::onAddDirectory)
 EVT_MENU(wxID_INFO, MainWindow::onAbout_Dlg)
@@ -66,21 +68,21 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, const wxString& title, c
 	
 	// Statusbar
 #if wxUSE_STATUSBAR
+
 	const int SIZE = 3;
 	statusbar = CreateStatusBar(SIZE);
-	statusbar->SetBackgroundColour(wxColour(100, 100, 80));
+	statusbar->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	statusbar->SetForegroundColour(wxColour(255, 255, 255));
-	//int ver = GetVersion(MainWindow::player);
 	int ver = mplayer.ZGetVersion(this->player);
 	statusbar->SetStatusText(wxString::Format("libZPlay v.%i.%02i\r\n\r\n", ver / 100, ver % 100));
 	statusbar->SetStatusText(_("..::BIN BEREIT :-)) ::.."), 1);
 	int widths[SIZE] = { 100, -2  -1};
 	statusbar->SetStatusWidths(SIZE, widths);
 
-	//wxRect rect;
-	//statusbar->GetFieldRect(1, rect);
-	//wxGauge* progress = new wxGauge(statusbar, 10006, 100, rect.GetPosition(), rect.GetSize(), wxGA_SMOOTH);
-
+	/*wxRect rect;
+	statusbar->GetFieldRect(1, rect);
+	wxGauge* progress = new wxGauge(statusbar, 10006, 100, rect.GetPosition(), rect.GetSize(), wxGA_SMOOTH);
+	*/
 #endif
 
 }
@@ -88,13 +90,21 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, const wxString& title, c
 
 void MainWindow::Init_Components(int h, int w)
 {
+	
+	//Splitter Windows Create
+	//wxSplitterWindow* splitterWnd = new wxSplitterWindow(this, wxID_ANY);
+	//splitterWnd->SetMinimumPaneSize(100);
+
 
 	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
 	
 	basicListView = new ListviewControl(this, wxID_ANY, wxDefaultPosition, wxSize(w, h));
+	basicListView->SetFont(wxFont(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Segoe UI")));
 	basicListView->Bind(wxEVT_LEFT_DCLICK, &MainWindow::onListClick ,this);
 	basicListView->Bind(wxEVT_CHAR, &MainWindow::onChar, this);
 	basicListView->Bind(wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK, &MainWindow::onRightClickMenu, this);
+
+
 	sizer->Add(basicListView, 0, wxEXPAND | wxALL, 0);
 	this->SetSizer(sizer);
 	this->Layout();
@@ -107,6 +117,16 @@ void MainWindow::update_status(wxString message)
 {
 	wxStatusBar* bar = GetStatusBar();
 	bar->SetStatusText(message, 1);
+}
+
+void MainWindow::onSettingsDialog(wxCommandEvent& event)
+{
+	SettingDialog* settingsdialog = new SettingDialog(this, wxID_ANY, _("Programm Settings"), wxDefaultPosition, wxSize(500,400));
+	if (settingsdialog->ShowModal() == wxID_OK) {
+		settingsdialog->Destroy();
+	}
+	return;
+
 }
 
 
@@ -142,7 +162,7 @@ void MainWindow::OnSize(wxSizeEvent& event)
 	 // Neue Grösse setzen
 
 	wxSize size = this->GetSize();
-	basicListView->SetSize(size.GetWidth() - 15, size.GetHeight() - 130);
+	basicListView->SetSize(size.GetWidth() - 15, size.GetHeight() - 120);
 	MainWindow::SetTitle(wxString::Format(wxT("Music Player 0.1 WxWidgets Projekt %d x %d"), MainWindow::GetSize().y, MainWindow::GetSize().x));
 
 	return;
@@ -170,7 +190,7 @@ void MainWindow::CreateMenu()
 	wxMenu* fileMenu = new wxMenu();
 
 	// Item EINSTELLUNGEN
-	wxMenuItem* config = new wxMenuItem(fileMenu, wxID_ANY);
+	wxMenuItem* config = new wxMenuItem(fileMenu, wxID_SETTINGS);
 	config->SetItemLabel(wxT("Einstellungen"));
 	config->SetBitmap(MenuBitmaps[2]);
 	fileMenu->Append(config);
@@ -249,7 +269,7 @@ void MainWindow::CreateToolbar()
 	toolbar->AddSeparator();
 	
 	//Slider Init
-	slider = new wxSlider(toolbar, wxID_SLIDER_VOL, 0, 0, 100, wxDefaultPosition, wxSize(150, -1), style = wxSL_HORIZONTAL | wxSL_BOTTOM | wxSL_TOP);
+	slider = new wxSlider(toolbar, wxID_SLIDER_VOL, 0, 0, 100, wxDefaultPosition, wxSize(150, -1), style = wxSL_HORIZONTAL | wxSL_BOTH | wxSL_MIN_MAX_LABELS);
 	
 	int set_vol = mplayer.GetMasterVolume(this->player);
 	
@@ -286,14 +306,14 @@ void MainWindow::onExit(wxCommandEvent& event)
 	wxFileName config_path(wxStandardPaths::Get().GetExecutablePath());
 	wxString xml_app_path = config_path.GetPath();
 	wxSize form_size = this->GetSize();
-	xmlconfig mconfig(xml_app_path);
+	xmlreader mconfig(xml_app_path);
 
 	int answer = wxMessageBox(wxT("Wollen Sie das Programm Beenden"), _("Frage"), wxCenter | wxYES_NO | wxICON_INFORMATION);
 	if (answer != wxNO)
 	{	
-		mconfig.savexml(this);
-			
-
+		this->mplayer.onStop(this->player);
+		this->player->Release();
+		mconfig.savexml(this);		
 		Destroy();
 		return;
 	}
@@ -302,13 +322,25 @@ void MainWindow::onExit(wxCommandEvent& event)
 
 void MainWindow::onAbout_Dlg(wxCommandEvent& event)
 {
+	wxAboutDialogInfo info;
 
-	About_Dlg* about = new About_Dlg(this, wxID_ANY, _("Über das Projekt Musicplayer 0.1 with wxWidgets Components"));
-	if (about->ShowModal() == wxID_OK)
-	{
+	info.SetName(L"Music Player");
+	info.SetVersion(L"1.0.0");
+	info.SetDescription(L"Ein einfacher Music Player für Windows");
+	info.SetCopyright(L"Copyright (c) 2023 Matthias Stoltze");
+	info.SetWebSite(L"https://github.com/thunderbird2013/musicplayer");
 
-	}
-	about->Destroy();
+	wxArrayString developers;
+	developers.Add(L"Matthias Stoltze und andere....");
+	info.SetDevelopers(developers);
+
+	wxArrayString docWriters;
+	docWriters.Add(L"Matthias Stoltze");
+	info.SetDocWriters(docWriters);	
+
+	//info.SetLicence();
+
+	wxAboutBox(info);	
 
 	return;
 }
@@ -511,7 +543,7 @@ void MainWindow::onNextTrack(wxCommandEvent& event)
 		//basicListView->EnsureVisible((list_total + 1));
 		//basicListView->SetScrollbar(list_total, lSelectedItem, 20, list_top, true);
 		
-		//basicListView->SetScrollPos(list_top - list_pp - 1 , lSelectedItem, true);
+	   //basicListView->SetScrollPos(list_top - list_pp - 1 , lSelectedItem, true);
 
 }
 
@@ -579,7 +611,7 @@ void MainWindow::onSliderScrollVol(wxScrollEvent& event)
 
 	if (!this->player->SetMasterVolume(vol_pos, vol_pos))
 	{
-		wxLogDebug(wxString::Format(wxT("Kann lautstärke nicht Setzen [%s]"), this->player->GetError(), vol_pos));
+		wxLogDebug(wxString::Format(wxT("Kann Lautstärke nicht Setzen [%s]"), this->player->GetError(), vol_pos));
 	}
 
 }
@@ -619,17 +651,25 @@ void MainWindow::ThreadWorker(wxStatusBar* bar, ZPlay* inst)
 		//wxLogMessage(wxString::Format("%d", status.fPlay));
 
 		if (status.fPlay == 0) {
-			wxLogMessage(wxT("Thread wird Beendet... with return"));
+		
+			wxLogMessage(wxT("Thread Debug wird Beendet... with return false....."));
 			running = false;
+		
 		}		
+
 		inst->GetPosition(&pos);
+		
 		int bitratez = inst->GetBitrate(0);
 
 		int bitratez1 = inst->GetBitrate(0);
+		
 		wxString bitrate = wxString::Format(wxT("%04i kbps"), bitratez1);
+		
 		wxString time = wxString::Format(wxT("%02i:%02i:%02i"), pos.hms.hour, pos.hms.minute, pos.hms.second);
+
 		bar->SetStatusText(wxString::Format(wxT("Playing.. Bitrate: [ %s ] - Time:[ %s ]"), bitrate, time), 1);	
-		boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+		
+		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 
 	}
 }
@@ -649,9 +689,10 @@ void MainWindow::LoadFilesVec(boost::filesystem::path p, ListviewControl* list)
 		mplayer.ScanFile(this->player, filename);		
 
 	}
-
+		// Hole ItemCount anzhahl der einträge
 		int num_count = basicListView->GetItemCount();
 
+		// Setze 0 von anfang oder zähle weiter wenn welche Existieren in der Listview
 		if (num_count != 0) {
 			count = num_count;
 		}
@@ -675,7 +716,7 @@ void MainWindow::LoadFilesVec(boost::filesystem::path p, ListviewControl* list)
 			list->SetItemState(0, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
 
 		}
-
+		//Delete Arrays
 		mplayer.struc_delete();
 
 		wxLogDebug(wxString::Format(wxT("Datein: %d gescannt und hinzugefügt in %ld ms/s"), count, sw.Time()));

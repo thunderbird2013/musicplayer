@@ -5,6 +5,10 @@
 #include <wx/msgdlg.h>
 #include <wx/wxprec.h>
 #include <wx/listctrl.h>
+#include <wx/aboutdlg.h>
+#include <wx/splitter.h>
+#include <wx/sizer.h>
+#include <wx/panel.h>
 
 //Standart
 #include <iostream>
@@ -21,7 +25,8 @@
 #include "About_Dlg.h"
 #include "itemdata.h"
 #include "LibZPlayer.h"
-#include "xmlconfig.h"
+#include "xmlreader.h"
+#include "SettingDialog.h"
 
 
 #ifndef WX_PRECOMP
@@ -83,6 +88,7 @@ public:
     void onCloseWindow(wxCloseEvent& event);
     void ThreadWorker(wxStatusBar* bar, ZPlay* inst);
     void update_status(wxString message); 
+    void onSettingsDialog(wxCommandEvent& event);
 
     //Global Variables
     long style;
@@ -91,12 +97,14 @@ public:
     LibZPlayer mplayer;   
     
     // Event Tables
-    DECLARE_EVENT_TABLE()         
+    DECLARE_EVENT_TABLE()
    
 
 private:   
+    
 
-    ListviewControl *basicListView;   
+    ListviewControl *basicListView; 
+    wxGauge* basicGauge;
     wxToolBar* toolbar;
     wxSlider* slider;
     void Init_Components(int h, int w);

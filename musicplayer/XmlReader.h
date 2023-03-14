@@ -7,12 +7,12 @@
 #include <wx/vector.h>
 #include <wx/string.h>
 
-class xmlconfig
+class xmlreader
 {
 	public:
-		xmlconfig(const wxString app_path);
+		xmlreader(const wxString app_path);
 		void savexml(wxWindow* parent);
-		void restorexml();			
+		void restorexml(wxWindow* parent);			
 	private:
 		wxString xml_filename_ = "musicplayer.xml";
 		wxString xml_config_path_;

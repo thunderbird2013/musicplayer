@@ -1,22 +1,13 @@
-#include "xmlconfig.h"
+#include "xmlreader.h"
 
-xmlconfig::xmlconfig(const wxString app_path)
+xmlreader::xmlreader(const wxString app_path)
 {
 
 	this->xml_config_path_ = app_path;
 
-	//if (!wxFileExists(wxString::Format("%s\\%s", this->xml_config_path_, this->xml_filename_)))	
-//	{
-
-//		wxLogDebug(wxString::Format("File Create: %s\\%s"), this->xml_config_path_, this->xml_filename_);
-//	}
-//	else {
-//		wxLogDebug(wxString::Format("not File Create: %s\\%s"), this->xml_config_path_, this->xml_filename_);
-//	}
-
 }
 
-void xmlconfig::savexml(wxWindow* parent)
+void xmlreader::savexml(wxWindow* parent)
 {
 	wxString SettingFile = wxString::Format("%s\\%s", this->xml_config_path_, this->xml_filename_);
 
@@ -52,10 +43,39 @@ void xmlconfig::savexml(wxWindow* parent)
 	xmlDoc.Save(SettingFile);
 }
 
-void xmlconfig::restorexml()
+void xmlreader::restorexml(wxWindow* parent)
 {
 
+	wxString SettingFile = wxString::Format("%s\\%s", this->xml_config_path_, this->xml_filename_);
 
+	wxXmlDocument xmlDoc;
+
+	if (xmlDoc.GetRoot() == nullptr)
+	{
+		return;
+	}
+
+	if(!xmlDoc.GetRoot()->GetName().IsSameAs(wxT("settings")))
+	{
+		return;
+	}
+
+	wxXmlNode* mainWindowNode = nullptr;
+	wxXmlNode* node = xmlDoc.GetRoot()->GetChildren();
+
+	while (node != nullptr)
+	{
+		if (node->GetName().IsSameAs(wxT("mainwindow")))
+		{
+			//Found our Node
+			mainWindowNode = node;
+			break;
+		}
+		
+		/* Continue with the next node*/
+		node = node->GetNext();
+	
+	}
 
 }
 
