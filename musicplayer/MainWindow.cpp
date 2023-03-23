@@ -37,21 +37,23 @@ EVT_CHAR(MainWindow::onChar)
 END_EVENT_TABLE()
 
 
-// Constructor
+// Konstructor
 MainWindow::MainWindow(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
 	:wxFrame(parent, id, title, pos, size, style, name)
 {
+	/* Loading Sound Output and save Struct*/
+	mplayer.Init_Soundcard(this->player);
 
-	// Höhe Breite Holen vom Fenster holen
+	/* Höhe und Breite holen vom Fenster holen; -) */
 	int h, w;
 	GetClientSize(&w, &h);
 
-	 // Create Menu
+	/* Create Menu */
 	MainWindow::CreateMenu();
 	// Create Toolbar
 	MainWindow::CreateToolbar();		
 	
-	//Custom Event Handlers
+	/* Custom Event Handlers */
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onDeleteAllItems, this, wxID_DELLITEMSALL);
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onAddFiles, this, wxID_ADDFILES);
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onExit, this, wxID_EXIT);	
@@ -66,7 +68,7 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, const wxString& title, c
 	Init_Components(h, w);
 	
 	
-	// Statusbar
+	/* Statusbar */
 #if wxUSE_STATUSBAR
 
 	const int SIZE = 3;
@@ -121,10 +123,17 @@ void MainWindow::update_status(wxString message)
 
 void MainWindow::onSettingsDialog(wxCommandEvent& event)
 {
-	SettingDialog* settingsdialog = new SettingDialog(this, wxID_ANY, _("Programm Settings"), wxDefaultPosition, wxSize(500,400));
-	if (settingsdialog->ShowModal() == wxID_OK) {
+	SettingDialog* settingsdialog = new SettingDialog(this, 
+													  this->player, 
+													  this->mplayer, 
+													  wxID_ANY, 
+													  _("Programm Settings"),
+													  wxDefaultPosition, 
+													  wxSize(500,200));
+	if (settingsdialog->ShowModal() == wxID_OK) {	
+		settingsdialog->onSave(this);
 		settingsdialog->Destroy();
-	}
+	}	
 	return;
 
 }
@@ -280,13 +289,14 @@ void MainWindow::CreateToolbar()
 	toolbar->AddSeparator();
 
 	wxComboBox* combo = new wxComboBox(toolbar, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(200, -1), 0, NULL, wxCB_READONLY);
-	for (auto & card : mplayer.GetSoundCard(this->player))
+	for (size_t i = 0; i < mplayer.i_soundcard.size(); i++)
 	{
-		combo->Append(card);
-	}	
-	toolbar->AddSeparator();
-
+		//wxMessageBox(wxString::Format(wxT("5%u"), (unsigned int)mplayer.i_soundcard[i].format), _("Vol Set Integer"), wxOK_DEFAULT);
+		combo->Append(mplayer.i_soundcard[i].name);
+	}
 	combo->SetSelection(0);
+
+	toolbar->AddSeparator();
 	toolbar->AddControl(combo, wxT("Combobox Label"));	
 	toolbar->AddTool(wxID_PREVTRACK, _("LAST"), toolbarBitmaps[0]);
 	toolbar->AddTool(wxID_ANY, _("REWIND"), toolbarBitmaps[6]);
@@ -374,7 +384,7 @@ void MainWindow::onAddFiles(wxCommandEvent& event)
 	wxFileDialog openFileDialog(this, _("Öffne Audio Datein"), 
 											"", 
 											"", 
-											"Mp3 files (*.mp3)|*.mp3",
+											"All Music Files (*.mp3;*.flac;*.ogg;*.aac;*.wav)|*.mp3;*.flac;*.ogg;*.aac;*.wav | Mp3 files (*.mp3)|*.mp3",
 											wxFD_OPEN | wxFD_FILE_MUST_EXIST | OFN_ALLOWMULTISELECT);
 
 
@@ -464,6 +474,8 @@ void MainWindow::onListClick(wxMouseEvent& event)
 
 	
 	  boost::thread* thr = new boost::thread (&MainWindow::ThreadWorker, this, statusbar, this->player);
+
+      //boost::thread* thr = new boost::thread(&LibZPlayer::ThreadWorker, this, statusbar, player);
 	  thr->detach();
 	
 	
@@ -659,7 +671,7 @@ void MainWindow::ThreadWorker(wxStatusBar* bar, ZPlay* inst)
 
 		inst->GetPosition(&pos);
 		
-		int bitratez = inst->GetBitrate(0);
+		//int bitratez = inst->GetBitrate(0);
 
 		int bitratez1 = inst->GetBitrate(0);
 		
@@ -710,12 +722,12 @@ void MainWindow::LoadFilesVec(boost::filesystem::path p, ListviewControl* list)
 				});
 
 			count++;
-
-			list->RefreshAfterUpdate();
-			list->SetFocus();
-			list->SetItemState(0, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
-
+			
+			
 		}
+		list->RefreshAfterUpdate();
+		list->SetItemState(0, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+		list->SetFocus();
 		//Delete Arrays
 		mplayer.struc_delete();
 

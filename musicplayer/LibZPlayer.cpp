@@ -3,7 +3,7 @@
 /*
 * constructor init
 */
-LibZPlayer::LibZPlayer(void)
+LibZPlayer::LibZPlayer()
 {}
 
 //deconstructor
@@ -85,10 +85,6 @@ void LibZPlayer::ScanFile(ZPlay* inst, const wchar_t* z_filename)
 		if (pinfo.VBR)
 			sVbr = "VBR";		
 
-		//fscan newdata;
-		//newdata.stitle = id3_info.Title;
-		//this->i_file.push_back(newdata);
-
 		
 		/* Thanks for function https://github.com/holosiek/FrozeT */
 		wxString toTitle	= z_filename;
@@ -100,6 +96,7 @@ void LibZPlayer::ScanFile(ZPlay* inst, const wchar_t* z_filename)
 
 		/* ID3 INFO STRINGS*/
 		wxString id3_title;
+		wxString id3_artist;
 		/* ENDE */
 
 
@@ -196,4 +193,20 @@ int LibZPlayer::RoundNum(int num)
 int LibZPlayer::ZGetVersion(ZPlay* inst)
 {
 	return inst->GetVersion();
+}
+
+void LibZPlayer::Init_Soundcard(ZPlay* inst)
+{
+		
+	int num = inst->EnumerateWaveOut();
+	int i;
+	TWaveOutInfo waveOutInfo;
+	for (i = 0; i < num; i++)
+	{
+		if (inst->GetWaveOutInfo(i, &waveOutInfo))			
+
+			this->i_soundcard.push_back({ i, waveOutInfo.ProductName, waveOutInfo.Channels, waveOutInfo.Formats });
+
+	}
+	return;
 }

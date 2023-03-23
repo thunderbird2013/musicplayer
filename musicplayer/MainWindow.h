@@ -55,15 +55,16 @@ class MainWindow: public wxFrame
 {
 public:   
     
-    ZPlay* player = CreateZPlay();
+   ZPlay* player = CreateZPlay();
 
-	MainWindow(wxWindow* parent,
-                  wxWindowID id,
-                  const wxString& title,
-                  const wxPoint& pos = wxDefaultPosition,
-                  const wxSize& size = wxDefaultSize,
-                  long style = wxDEFAULT_FRAME_STYLE,
-                  const wxString& name = wxASCII_STR(wxFrameNameStr));
+
+    MainWindow(wxWindow* parent,
+        wxWindowID id,
+        const wxString& title,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize,
+        long style = wxDEFAULT_FRAME_STYLE,
+        const wxString& name = wxASCII_STR(wxFrameNameStr));
 	~MainWindow();
 
     // Standart Messages Events

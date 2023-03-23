@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.32002.261
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "musicplayer", "musicplayer\musicplayer.vcxproj", "{7AB7A132-360B-4EDF-A637-2AD13B8DE104}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libzplay_static", "..\libZPlay\vc++\libzplay_static\libzplay_static.vcxproj", "{37859D90-C124-4E24-8823-A070B19BE289}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,12 @@ Global
 		{7AB7A132-360B-4EDF-A637-2AD13B8DE104}.Release|x64.Build.0 = Release|x64
 		{7AB7A132-360B-4EDF-A637-2AD13B8DE104}.Release|x86.ActiveCfg = Release|Win32
 		{7AB7A132-360B-4EDF-A637-2AD13B8DE104}.Release|x86.Build.0 = Release|Win32
+		{37859D90-C124-4E24-8823-A070B19BE289}.Debug|x64.ActiveCfg = Debug|Win32
+		{37859D90-C124-4E24-8823-A070B19BE289}.Debug|x86.ActiveCfg = Debug|Win32
+		{37859D90-C124-4E24-8823-A070B19BE289}.Debug|x86.Build.0 = Debug|Win32
+		{37859D90-C124-4E24-8823-A070B19BE289}.Release|x64.ActiveCfg = Release|Win32
+		{37859D90-C124-4E24-8823-A070B19BE289}.Release|x86.ActiveCfg = Release|Win32
+		{37859D90-C124-4E24-8823-A070B19BE289}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
