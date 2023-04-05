@@ -18,6 +18,7 @@ wxDEFINE_EVENT(wxID_DELLITEMSALL, wxCommandEvent);
 wxDEFINE_EVENT(wxID_SLIDER_VOL, wxScrollEvent);
 wxDEFINE_EVENT(wxID_RIGHT_CLICK, wxListEvent);
 wxDEFINE_EVENT(wxID_SETTINGS, wxCommandEvent);
+wxDEFINE_EVENT(wxID_SLIDER_SEEK, wxScrollEvent);
 
 
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
@@ -41,7 +42,7 @@ END_EVENT_TABLE()
 MainWindow::MainWindow(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
 	:wxFrame(parent, id, title, pos, size, style, name)
 {
-	/* Loading Sound Output and save Struct*/
+	/* Loading Sound Output and Save Struct*/
 	mplayer.Init_Soundcard(this->player);
 
 	/* Höhe und Breite holen vom Fenster holen; -) */
@@ -50,6 +51,7 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, const wxString& title, c
 
 	/* Create Menu */
 	MainWindow::CreateMenu();
+	
 	// Create Toolbar
 	MainWindow::CreateToolbar();		
 	
@@ -59,11 +61,16 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, const wxString& title, c
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onExit, this, wxID_EXIT);	
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onAbout_Dlg, this, wxID_INFO);
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainWindow::onAddDirectory, this, wxID_ADD);
+	
 	// Static Event Handlers
 	Bind(wxEVT_CLOSE_WINDOW, &MainWindow::onCloseWindow, this);
 	Bind(wxEVT_SIZE, &MainWindow::OnSize, this);
 
+	/*VOL SCROLLBAR*/
 	Connect(wxID_SLIDER_VOL, wxEVT_COMMAND_SLIDER_UPDATED, wxScrollEventHandler(MainWindow::onSliderScrollVol));
+
+	/*TRACK SEEKBAR*/
+	Connect(wxID_SLIDER_SEEK, wxEVT_COMMAND_SLIDER_UPDATED, wxScrollEventHandler(MainWindow::onSliderSeek));
 
 	Init_Components(h, w);
 	
@@ -73,18 +80,17 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, const wxString& title, c
 
 	const int SIZE = 3;
 	statusbar = CreateStatusBar(SIZE);
+	statusbar->SetSize(w, 20);
 	statusbar->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	statusbar->SetForegroundColour(wxColour(255, 255, 255));
 	int ver = mplayer.ZGetVersion(this->player);
 	statusbar->SetStatusText(wxString::Format("libZPlay v.%i.%02i\r\n\r\n", ver / 100, ver % 100));
 	statusbar->SetStatusText(_("..::BIN BEREIT :-)) ::.."), 1);
-	int widths[SIZE] = { 100, -2  -1};
+	int widths[SIZE] = { 100, 600, -2};
 	statusbar->SetStatusWidths(SIZE, widths);
-
-	/*wxRect rect;
-	statusbar->GetFieldRect(1, rect);
-	wxGauge* progress = new wxGauge(statusbar, 10006, 100, rect.GetPosition(), rect.GetSize(), wxGA_SMOOTH);
-	*/
+	statusbar->GetFieldRect(2, rect);
+	progress = new wxGauge(statusbar, 10006, 100, rect.GetPosition(), wxDefaultSize, wxGA_SMOOTH);
+	
 #endif
 
 }
@@ -138,6 +144,17 @@ void MainWindow::onSettingsDialog(wxCommandEvent& event)
 
 }
 
+void MainWindow::onSliderSeek(wxScrollEvent& event)
+{
+	/* TRACK SEEK */
+	track_seek = this->slider_seek->GetValue();
+
+	TStreamTime pTime;
+	pTime.sec = track_seek;
+	this->player->Seek(tfSecond, &pTime, smFromBeginning);
+
+}
+
 
 wxVector<wxString> MainWindow::GetScanFiles(boost::filesystem::path p)
 {
@@ -168,11 +185,23 @@ void MainWindow::OnSize(wxSizeEvent& event)
 	// wxRect mRect;
 	// GetClientSize(&w, &h); // Höhe Breite Holen
 	// 
-	 // Neue Grösse setzen
+	// Neue Grösse setzen
 
 	wxSize size = this->GetSize();
-	basicListView->SetSize(size.GetWidth() - 15, size.GetHeight() - 120);
-	MainWindow::SetTitle(wxString::Format(wxT("Music Player 0.1 WxWidgets Projekt %d x %d"), MainWindow::GetSize().y, MainWindow::GetSize().x));
+
+	if( basicListView )
+		basicListView->SetSize(size.GetWidth() - 15, size.GetHeight() - 120);
+	
+	if ( statusbar )
+
+		statusbar->SetSize(size.GetWidth(), 20);
+
+	if (progress)
+		progress->SetSize(size.GetWidth() - 500, 17);
+		//progress->SetPosition(wxPoint(size.GetWidth(), 20));
+	
+
+		MainWindow::SetTitle(wxString::Format(wxT("Music Player 0.1 WxWidgets Projekt %d x %d"), MainWindow::GetSize().y, MainWindow::GetSize().x));
 
 	return;
 }
@@ -278,15 +307,17 @@ void MainWindow::CreateToolbar()
 	toolbar->AddSeparator();
 	
 	//Slider Init
-	slider = new wxSlider(toolbar, wxID_SLIDER_VOL, 0, 0, 100, wxDefaultPosition, wxSize(150, -1), style = wxSL_HORIZONTAL | wxSL_BOTH | wxSL_MIN_MAX_LABELS);
-	
-	int set_vol = mplayer.GetMasterVolume(this->player);
-	
+	slider = new wxSlider(toolbar, wxID_SLIDER_VOL, 0, 0, 100, wxDefaultPosition, wxSize(120, -1), style = wxSL_HORIZONTAL | wxSL_BOTH | wxSL_MIN_MAX_LABELS);	
+	int set_vol = mplayer.GetMasterVolume(this->player);	
 	//wxMessageBox(wxString::Format(wxT("%d"), (int)set_vol), _("Vol Set Integer"), wxOK_DEFAULT);
 	slider->SetValue(set_vol);
+	
 	toolbar->AddControl(slider);
+	
+	//toolbar->AddSeparator();
+	slider_seek = new wxSlider(toolbar, wxID_SLIDER_SEEK, 0, 0, 100, wxDefaultPosition, wxSize(120, -1), style = wxSL_HORIZONTAL | wxSL_BOTH);
 
-	toolbar->AddSeparator();
+	toolbar->AddControl(slider_seek);
 
 	wxComboBox* combo = new wxComboBox(toolbar, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(200, -1), 0, NULL, wxCB_READONLY);
 	for (size_t i = 0; i < mplayer.i_soundcard.size(); i++)
@@ -294,6 +325,7 @@ void MainWindow::CreateToolbar()
 		//wxMessageBox(wxString::Format(wxT("5%u"), (unsigned int)mplayer.i_soundcard[i].format), _("Vol Set Integer"), wxOK_DEFAULT);
 		combo->Append(mplayer.i_soundcard[i].name);
 	}
+
 	combo->SetSelection(0);
 
 	toolbar->AddSeparator();
@@ -317,6 +349,8 @@ void MainWindow::onExit(wxCommandEvent& event)
 	wxString xml_app_path = config_path.GetPath();
 	wxSize form_size = this->GetSize();
 	xmlreader mconfig(xml_app_path);
+
+	thr->interrupt();
 
 	int answer = wxMessageBox(wxT("Wollen Sie das Programm Beenden"), _("Frage"), wxCenter | wxYES_NO | wxICON_INFORMATION);
 	if (answer != wxNO)
@@ -442,8 +476,10 @@ void MainWindow::onListClick(wxMouseEvent& event)
 	//	int count = basicListView->GetItemCount();
 	//	wxMessageBox(wxString::Format(wxT("%d"), (int)count), _("hier"), wxOK_DEFAULT);
 	
+
 	this->player->Stop();
 	this->player->Close();
+
 
 	long itemIndex = -1;
 	wxListItem info;
@@ -465,6 +501,14 @@ void MainWindow::onListClick(wxMouseEvent& event)
 	this->player->OpenFileW(wxString::Format("%s", info.m_text.c_str()),sfAutodetect);
 	this->player->Play();
 
+	TStreamInfo pinfo;
+	this->player->GetStreamInfo(&pinfo);
+	//wxString test = wxString::Format("%i", pinfo.Length.sec);	
+
+	/* Set Maximum Int Slider and Gaugebar*/
+	slider_seek->SetMax(pinfo.Length.sec);
+	progress->SetRange(pinfo.Length.sec);
+
 	/*
 	* Start Thread für Timer und Updates
 	* Klasse schreiben so funz das net und Crasht :(
@@ -472,8 +516,8 @@ void MainWindow::onListClick(wxMouseEvent& event)
 	//boost::thread* thr = new boost::thread( boost::bind( &MainWindow::ThreadWorker, this, statusbar ) );
 	//boost::thread* thr = new boost::thread(&MainWindow::ThreadWorker, this, statusbar);
 
-	
-	  boost::thread* thr = new boost::thread (&MainWindow::ThreadWorker, this, statusbar, this->player);
+		/* Create Thread and detach playing infos*/
+	  thr = new boost::thread (&MainWindow::ThreadWorker, this, progress, slider_seek, statusbar, this->player);
 
       //boost::thread* thr = new boost::thread(&LibZPlayer::ThreadWorker, this, statusbar, player);
 	  thr->detach();
@@ -586,6 +630,7 @@ void MainWindow::onPrevTrack(wxCommandEvent& event)
 
 void MainWindow::onStop(wxCommandEvent& event)
 {
+	thr->interrupt();
 	mplayer.onStop(this->player);
 }
 
@@ -650,7 +695,7 @@ void MainWindow::onCloseWindow(wxCloseEvent& event)
 	this->Destroy();
 }
 
-void MainWindow::ThreadWorker(wxStatusBar* bar, ZPlay* inst)
+void MainWindow::ThreadWorker(wxGauge* track_gauge, wxSlider* track_seek, wxStatusBar* bar, ZPlay* inst)
 {
 	bool running = true;	
 	TStreamStatus status;
@@ -664,25 +709,27 @@ void MainWindow::ThreadWorker(wxStatusBar* bar, ZPlay* inst)
 
 		if (status.fPlay == 0) {
 		
-			wxLogMessage(wxT("Thread Debug wird Beendet... with return false....."));
+			//wxLogMessage(wxT("Thread Debug wird Beendet... with return false....."));
 			running = false;
 		
 		}		
 
 		inst->GetPosition(&pos);
-		
-		//int bitratez = inst->GetBitrate(0);
 
 		int bitratez1 = inst->GetBitrate(0);
 		
+		track_seek->SetValue(pos.sec);
+		track_gauge->SetValue(pos.sec);
+
 		wxString bitrate = wxString::Format(wxT("%04i kbps"), bitratez1);
 		
 		wxString time = wxString::Format(wxT("%02i:%02i:%02i"), pos.hms.hour, pos.hms.minute, pos.hms.second);
 
+		wxString sec = wxString::Format(wxT("%i"), pos.sec);
 		bar->SetStatusText(wxString::Format(wxT("Playing.. Bitrate: [ %s ] - Time:[ %s ]"), bitrate, time), 1);	
 		
-		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
-
+		boost::this_thread::sleep(boost::posix_time::seconds(1));
+		/*milliseconds(100)*/
 	}
 }
 

@@ -87,14 +87,19 @@ public:
     void onSliderScrollVol(wxScrollEvent& event);    
     void onRightClickMenu(wxListEvent& event);
     void onCloseWindow(wxCloseEvent& event);
-    void ThreadWorker(wxStatusBar* bar, ZPlay* inst);
+    void ThreadWorker(wxGauge* track_gauge, wxSlider* track_seek, wxStatusBar* bar, ZPlay* inst);
     void update_status(wxString message); 
     void onSettingsDialog(wxCommandEvent& event);
+    void onSliderSeek(wxScrollEvent& event);
 
     //Global Variables
     long style;
     int vol_pos;
+    int track_seek;
     wxStatusBar* statusbar;
+    wxGauge* progress;
+    wxRect rect;
+    boost::thread* thr;
     LibZPlayer mplayer;   
     
     // Event Tables
@@ -108,6 +113,7 @@ private:
     wxGauge* basicGauge;
     wxToolBar* toolbar;
     wxSlider* slider;
+    wxSlider* slider_seek;
     void Init_Components(int h, int w);
     void CreateMenu();
     void CreateToolbar();    
