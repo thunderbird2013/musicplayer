@@ -1,3 +1,10 @@
+/*****************************************************************//**
+ * \file   LibZPlayer.h
+ * \brief  
+ * 
+ * \author Matthias Stoltze @thunderbird
+ * \date   April 2023
+ *********************************************************************/
 #pragma once
 
 //BOOST
@@ -25,6 +32,7 @@ struct fscan
 	wxString sabtastrate;
 	wxString ssamplerate;
 	wxString spath;
+	wxString sextention;
 };
 
 struct soundcardinit
@@ -47,13 +55,13 @@ class LibZPlayer
 		//ZPlay* inst;
 
 		// EVENT FUNCTIONS
-		bool onPlayTrack(ZPlay* inst,wchar_t* z_filename);
+		bool onPlayTrack(wxWindow* parent, ZPlay* inst, const wchar_t* z_filename, wxStatusBar* bar, wxSlider* seekbar, wxGauge* progress);
 		void onStop(ZPlay* inst);
 		void onPause(ZPlay* inst);
 		wxVector<wxString> GetSoundCard(ZPlay* inst);
 		void ScanFile(ZPlay* inst, const wchar_t* z_filename);
 		// INFO GET SET			
-		void play_worker(ZPlay* inst, wxWindow* parent, wxStatusBar* bar);
+		void play_worker(ZPlay* inst, wxWindow* parent, wxStatusBar* bar, wxSlider* seekbar, wxGauge* progress);
 		int GetMasterVolume(ZPlay* inst);
 		int  ZGetVersion(ZPlay* inst);
 		void struc_delete();
@@ -63,5 +71,5 @@ class LibZPlayer
 		wxVector<soundcardinit> i_soundcard;
 
 	private:
-			
+		boost::thread* thread;
 };

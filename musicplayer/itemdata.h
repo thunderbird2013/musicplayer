@@ -8,6 +8,7 @@ struct ItemData
 	wxString titel;
 	wxString artist;
 	wxString time;
+	wxString codec;
 	wxString encoder;
 	wxString bitrate;
 	wxString path;

@@ -1,0 +1,7 @@
+{
+  "name": "musicplayer",
+  "version-string": "master",
+  "dependencies": [
+    ""
+  ]
+}

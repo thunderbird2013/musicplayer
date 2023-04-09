@@ -8,6 +8,7 @@ ListviewControl::ListviewControl(wxWindow* parent, const wxWindowID id, const wx
     this->AppendColumn(wxT("Titel/Track"));
     this->AppendColumn(wxT("Artist/Album"));
     this->AppendColumn(wxT("Time"));
+    this->AppendColumn(wxT("Codec"));
     this->AppendColumn(wxT("Abtastrate"));
     this->AppendColumn(wxT("Samplerate"));
     this->AppendColumn(wxT("Datei-Path"));
@@ -16,9 +17,10 @@ ListviewControl::ListviewControl(wxWindow* parent, const wxWindowID id, const wx
     this->SetColumnWidth(1, 250);
     this->SetColumnWidth(2, 250);
     this->SetColumnWidth(3, 80);
-    this->SetColumnWidth(4, 50);
+    this->SetColumnWidth(4, 80);
     this->SetColumnWidth(5, 50);
-    this->SetColumnWidth(6, 500);
+    this->SetColumnWidth(6, 50);
+    this->SetColumnWidth(7, 500);
 }
 
 wxString ListviewControl::OnGetItemText(long index, long column)const
@@ -30,9 +32,10 @@ wxString ListviewControl::OnGetItemText(long index, long column)const
     case 1: return item.titel;
     case 2: return item.artist;
     case 3: return item.time;
-    case 4: return item.encoder;
-    case 5: return item.bitrate;
-    case 6: return item.path;
+    case 4: return item.codec;
+    case 5: return item.encoder;
+    case 6: return item.bitrate;
+    case 7: return item.path;
     default: return "";
     }
 }
@@ -73,7 +76,7 @@ wxString ListviewControl::TextbyColum(long nIndex, int nCol)
     return Item.GetText(); // get and return its text
 }
 
-void ListviewControl::additems(int id, const string& titel, const string& artist, const string& time, const string& encoder, const string& bitrate, const string& path)
+void ListviewControl::additems(int id, const string& titel, const string& artist, const string& time, const string& codec, const string& encoder, const string& bitrate, const string& path)
 {
     int index = this->GetItemCount();
 
@@ -81,11 +84,12 @@ void ListviewControl::additems(int id, const string& titel, const string& artist
     this->SetItem(index, 1, titel);
     this->SetItem(index, 2, artist);
     this->SetItem(index, 3, time);
-    this->SetItem(index, 4, encoder);
-    this->SetItem(index, 5, bitrate);
-    this->SetItem(index, 6, path);
+    this->SetItem(index, 4, codec);
+    this->SetItem(index, 5, encoder);
+    this->SetItem(index, 6, bitrate);
+    this->SetItem(index, 7, path);
 
 
-    ItemData data{ id, titel, artist, time, encoder, bitrate, path };
+    ItemData data{ id, titel, artist, time, codec, encoder, bitrate, path };
 
 }

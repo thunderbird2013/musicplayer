@@ -15,7 +15,7 @@ public:
         const wxPoint& pos,
         const wxSize& size);
     virtual wxString OnGetItemText(long index, long column)const wxOVERRIDE;    
-    void additems(int id, const string& titel, const string& artist, const string& time, const string& encoder, const string& bitrate, const string& path);
+    void additems(int id, const string& titel, const string& artist, const string& time, const string& codec, const string& encoder, const string& bitrate, const string& path);
     void RefreshAfterUpdate();
     void ChangeofTwoColorListView(long MaxItems);
     wxString TextbyColum(long nIndex, int nCol);

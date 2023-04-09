@@ -86,6 +86,12 @@
     <LinkIncremental>false</LinkIncremental>
     <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgAdditionalInstallOptions>--feature-flags="versions"</VcpkgAdditionalInstallOptions>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -168,6 +174,8 @@
   <ItemGroup>
     <ClCompile Include="About_Dlg.cpp" />
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Converter.cpp" />
+    <ClCompile Include="Equalizer.cpp" />
     <ClCompile Include="ListviewControl.cpp" />
     <ClCompile Include="LogTarget.cpp" />
     <ClCompile Include="MainWindow.cpp" />
@@ -179,6 +187,8 @@
     <ClInclude Include="About_Dlg.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="browsedialog.h" />
+    <ClInclude Include="Converter.h" />
+    <ClInclude Include="Equalizer.h" />
     <ClInclude Include="id.h" />
     <ClInclude Include="itemdata.h" />
     <ClInclude Include="ListviewControl.h" />
@@ -205,6 +215,7 @@
   <ItemGroup>
     <None Include="cpp.hint" />
     <None Include="packages.config" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

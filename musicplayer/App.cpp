@@ -1,3 +1,10 @@
+/*****************************************************************//**
+ * \file   App.cpp
+ * \brief  
+ * 
+ * \author Matthias Stoltze @thunderbird
+ * \date   April 2023
+ *********************************************************************/
 #include "App.h"
 #include "id.h"
 #include "MainWindow.h"
@@ -37,7 +44,7 @@ bool App::OnInit()
 
     wxImage::AddHandler(new wxXPMHandler);
     wxImage::AddHandler(new wxPNGHandler);
-    wxLogDebug(wxT("Create Window standart Size wxSiuze(700, 500) wxDEFAULT_FRAMESTYLE...."));
+    wxLogDebug(wxT("Create Window standart Size wxSize(700, 500) wxDEFAULT_FRAMESTYLE...."));
 	
     MainWindow* main = new MainWindow(nullptr, window::id::MAINWINDOW, wxT(" "), wxPoint(-1, -1),wxSize(700, 500), wxDEFAULT_FRAME_STYLE);
    

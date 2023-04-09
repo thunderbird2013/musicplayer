@@ -13,6 +13,15 @@ LibZPlayer::~LibZPlayer()
 
 void LibZPlayer::onStop(ZPlay* inst)
 {
+
+	/* Thread Kill */
+	if (thread) {
+		thread->interrupt();
+		thread->join();
+		delete thread;
+		thread = 0;
+	}
+	/* Player Stop */
 	inst->Stop();
 }
 
@@ -33,8 +42,14 @@ void LibZPlayer::onPause(ZPlay* inst)
 
 }
 
-bool LibZPlayer::onPlayTrack(ZPlay* inst,wchar_t* z_filename)
+bool LibZPlayer::onPlayTrack(wxWindow* parent, ZPlay* inst, const wchar_t* z_filename, wxStatusBar* bar, wxSlider* seekbar, wxGauge* progress )
 {
+	TStreamInfo pinfo;
+
+    inst->GetStreamInfo(&pinfo);
+
+	if (!z_filename)
+		return false;
 
 	if (inst->OpenFileW(z_filename, sfAutodetect) == 0)
 	{
@@ -42,7 +57,22 @@ bool LibZPlayer::onPlayTrack(ZPlay* inst,wchar_t* z_filename)
 		wxMessageBox(wxString::Format(wxT("%s"), inst->GetErrorW()), _("ERROR LIBZPLAYER"), wxOK_DEFAULT);
 		return 0;
 	}
+
+	/* ....Playing..file...*/
 	inst->Play();
+
+	/* Playinfo */
+	inst->GetStreamInfo(&pinfo);
+
+	/* Set Maximum Int Slider and Gaugebar*/
+	seekbar->SetMax(pinfo.Length.sec);
+	progress->SetRange(pinfo.Length.sec);
+
+	/* Create Thread and detach playing infos*/	
+	thread = new boost::thread(&LibZPlayer::play_worker, this, inst, parent, bar, seekbar, progress);
+	thread->detach();
+
+
 
 	return true;
 }
@@ -93,7 +123,9 @@ void LibZPlayer::ScanFile(ZPlay* inst, const wchar_t* z_filename)
 		size_t lastHyphen   = toTitle.find_last_of(L"-");
 		/* END*/
 
-
+		/* File ending .mp3,.flac.ogg etc..*/
+		wxString id3_ext = toTitle.substr(lastDot + 1);		
+		
 		/* ID3 INFO STRINGS*/
 		wxString id3_title;
 		wxString id3_artist;
@@ -103,9 +135,11 @@ void LibZPlayer::ScanFile(ZPlay* inst, const wchar_t* z_filename)
 		if (id3_info.Title != 0)
 		{			
 			id3_title = toTitle.substr(lastHyphen + 2, lastDot - lastHyphen - 2);
-#ifdef MPDEBUG
+		
+		#ifdef MPDEBUG
 			wxMessageBox(id3_title,_("MPDEBUG"));
-#endif // MPDEBUG
+		#endif // MPDEBUG
+
 		}else{
 			id3_title = id3_info.Title;
 		}
@@ -121,7 +155,8 @@ void LibZPlayer::ScanFile(ZPlay* inst, const wchar_t* z_filename)
 						   time.wx_str(),
 						   sVbr.wx_str(),	
 						   sample.wx_str(),
-						   z_filename
+						   z_filename,
+						   id3_ext
 		});
 	} 
 	
@@ -162,23 +197,42 @@ int LibZPlayer::GetMasterVolume(ZPlay* inst)
 /*
 * Soll der Update Thread werden wird noch überarbeitet ist momentan in der MainWindow Implemetiert
 */
-void LibZPlayer::play_worker(ZPlay* inst, wxWindow* parent, wxStatusBar* bar)
+void LibZPlayer::play_worker(ZPlay* inst, wxWindow* parent, wxStatusBar* bar, wxSlider* seekbar, wxGauge* progress)
 {
-	int run = 1;
+	bool running = true;
 	TStreamStatus status;
-	inst->GetStatus(&status);
+	TStreamTime pos;
+	TStreamInfo pinfo;
 
-	while (run)
+	while (running)
 	{
+		inst->GetStatus(&status);
+		inst->GetStreamInfo(&pinfo);
+		inst->GetPosition(&pos);
 
-		TStreamTime pos;
-		inst->GetPosition(&pos);		
-		bar->SetStatusText(wxString::Format("% 02i: % 02i : % 02i", &pos));
+		//wxLogMessage(wxString::Format("%d", status.fPlay));
 
-		if (status.fPlay != 0) {
-			run = 0;
-		}
+		if (status.fPlay == 0) {
 
+			//wxLogMessage(wxT("Thread Debug wird Beendet... with return false....."));
+			running = false;
+
+		}		
+
+		int bitratez1 = inst->GetBitrate(0);
+
+		seekbar->SetValue(pos.sec);
+		progress->SetValue(pos.sec);
+
+		wxString bitrate = wxString::Format(wxT("%04i kbps"), bitratez1);
+
+		wxString time = wxString::Format(wxT("%02i:%02i:%02i"), pos.hms.hour, pos.hms.minute, pos.hms.second);
+
+		wxString sec = wxString::Format(wxT("%i"), pos.sec);
+
+		bar->SetStatusText(wxString::Format(wxT("Playing.. Bitrate: [ %s ] - Time:[ %s ]"), bitrate, time), 2);
+
+		boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 	}
 
 }
@@ -199,8 +253,11 @@ void LibZPlayer::Init_Soundcard(ZPlay* inst)
 {
 		
 	int num = inst->EnumerateWaveOut();
+	
 	int i;
+	
 	TWaveOutInfo waveOutInfo;
+
 	for (i = 0; i < num; i++)
 	{
 		if (inst->GetWaveOutInfo(i, &waveOutInfo))			

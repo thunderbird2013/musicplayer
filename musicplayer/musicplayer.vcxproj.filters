@@ -39,6 +39,12 @@
     <ClCompile Include="SettingDialog.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Equalizer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Converter.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -77,6 +83,12 @@
     <ClInclude Include="SettingDialog.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Equalizer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Converter.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
@@ -112,5 +124,6 @@
   <ItemGroup>
     <None Include="cpp.hint" />
     <None Include="packages.config" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
 </Project>

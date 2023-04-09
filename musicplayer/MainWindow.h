@@ -1,3 +1,10 @@
+/*****************************************************************//**
+ * \file   MainWindow.h
+ * \brief  
+ * 
+ * \author Matthias Stoltze @thunderbird
+ * \date   April 2023
+ *********************************************************************/
 #pragma once
 
 //WX LIB
@@ -98,7 +105,7 @@ public:
     int track_seek;
     wxStatusBar* statusbar;
     wxGauge* progress;
-    wxRect rect;
+    wxRect rect,rect_1;
     boost::thread* thr;
     LibZPlayer mplayer;   
     
