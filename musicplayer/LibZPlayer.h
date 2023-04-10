@@ -72,4 +72,5 @@ class LibZPlayer
 
 	private:
 		boost::thread* thread;
+		bool running;
 };

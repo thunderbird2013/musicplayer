@@ -312,7 +312,7 @@ void MainWindow::CreateToolbar()
 	toolbar->AddTool(wxID_EXIT, _("QUIT"), toolbarBitmaps[10]);
 	
 
-	toolbar->AddTool(wxID_PREVTRACK, _("LAST"), toolbarBitmaps[0]);
+	toolbar->AddTool(wxID_PREVTRACK, _("LAST"), toolbarBitmaps[0],"312323");
 	toolbar->AddTool(wxID_ANY, _("REWIND"), toolbarBitmaps[6]);
 	toolbar->AddTool(wxID_ANY, _("FORWARD"), toolbarBitmaps[5]);
 	toolbar->AddTool(wxID_NEXTTRACK, _("NEXT"), toolbarBitmaps[1]);
@@ -435,7 +435,8 @@ void MainWindow::onAddFiles(wxCommandEvent& event)
 											"", 
 											"All Music Files (*.mp3;*.flac;*.ogg;*.aac;*.wav)|*.mp3;*.flac;*.ogg;*.aac;*.wav | MP3 files (*.mp3)|*.mp3",
 											wxFD_OPEN | wxFD_FILE_MUST_EXIST | OFN_ALLOWMULTISELECT);
-
+	wxFileName executable_path(wxStandardPaths::Get().GetExecutablePath());
+	openFileDialog.SetPath(executable_path.GetPath());
 
 	if (openFileDialog.ShowModal() == wxID_OK) {
 
@@ -494,13 +495,14 @@ void MainWindow::onListClick(wxMouseEvent& event)
 	//	int count = basicListView->GetItemCount();
 	//	wxMessageBox(wxString::Format(wxT("%d"), (int)count), _("hier"), wxOK_DEFAULT);
 	
-	if (player)
+	if (!player) {
 		mplayer.onStop(this->player);
-
+	}
+/*
 	if ( player )
 	this->player->Close();
 
-
+	*/
 	long itemIndex = -1;
 	wxListItem info;
 
@@ -680,7 +682,12 @@ void MainWindow::onPrevTrack(wxCommandEvent& event)
 
 void MainWindow::onStop(wxCommandEvent& event)
 {
-	mplayer.onStop(this->player);
+
+		mplayer.onStop(this->player);
+		//slider_seek->SetValue(0);
+		//basicGauge->SetValue(0);
+		//boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+		statusbar->SetStatusText(_("..::[STOP] - BIN BEREIT :-)) ::.."), 2);
 }
 
 void MainWindow::onPause(wxCommandEvent& event)
@@ -743,6 +750,7 @@ void MainWindow::onCloseWindow(wxCloseEvent& event)
 	this->Destroy();
 }
 
+/*
 void MainWindow::ThreadWorker(wxGauge* track_gauge, wxSlider* track_seek, wxStatusBar* bar, ZPlay* inst)
 {
 	bool running = true;	
@@ -779,7 +787,7 @@ void MainWindow::ThreadWorker(wxGauge* track_gauge, wxSlider* track_seek, wxStat
 		boost::this_thread::sleep(boost::posix_time::milliseconds(1000));		
 	}
 }
-
+*/
 void MainWindow::LoadFilesVec(boost::filesystem::path p, ListviewControl* list)
 {
 	wxStopWatch sw;		

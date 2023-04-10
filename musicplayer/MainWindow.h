@@ -125,7 +125,7 @@ private:
     void CreateMenu();
     void CreateToolbar();    
     void LoadFilesVec(boost::filesystem::path p, ListviewControl* list);
-    wxVector<wxString> GetScanFiles(boost::filesystem::path p);    
+    wxVector<wxString> GetScanFiles(boost::filesystem::path p);        
 };
 
 

@@ -49,12 +49,13 @@ public:
 	{
         TCHAR path[MAX_PATH];        
 
-        BROWSEINFO dialogOptions = { 0 };
+        BROWSEINFO dialogOptions = { 0 };        
         dialogOptions.lpszTitle = dialogTitle.c_str();
-        dialogOptions.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+        dialogOptions.ulFlags = BIF_RETURNONLYFSDIRS | BIF_BROWSEFORCOMPUTER;
         dialogOptions.lpfn = dialogHandler;
-        dialogOptions.lParam = NULL;
+        dialogOptions.lParam = NULL;        
         LPITEMIDLIST pidl = SHBrowseForFolder(&dialogOptions);
+        
 
         // If file system dialog is not canceled
         if (pidl != 0) 
