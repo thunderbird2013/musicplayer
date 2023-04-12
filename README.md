@@ -1,4 +1,4 @@
-# MusicPlayer V 1.0 Beta
+# MusicPlayer V 1.0 Beta [mp3,aac,ogg,flac,wav]
 
 <picture>
    <img alt="" src="https://github.com/thunderbird2013/musicplayer/blob/master/images/Screenshot_1.png">
