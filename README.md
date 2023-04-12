@@ -1,7 +1,8 @@
 #MusicPlayer V 1.0 Beta
 
-(https://github.com/thunderbird2013/musicplayer/blob/master/images/Screenshot_1.png)
-
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/thunderbird2013/musicplayer/blob/master/images/Screenshot_1.png">
+</picture>
 
 ##ToDo
 - [x] Listview and Form Menüs etc....
@@ -12,5 +13,7 @@
 [Download - Pre Release](https://github.com/thunderbird2013/musicplayer/releases)
 [Download - Runtime Files VC140](https://github.com/thunderbird2013/musicplayer/blob/master/Runtime/VC_redist.x86.exe)
 
-(https://github.com/thunderbird2013/musicplayer/blob/master/images/Screenshot_2.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/thunderbird2013/musicplayer/blob/master/images/Screenshot_2.png">
+</picture>
 
